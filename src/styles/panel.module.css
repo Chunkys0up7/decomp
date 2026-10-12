@@ -1,0 +1,66 @@
+/* Shared surfaces (visual spec 3, 5, 6): white rounded panels floating on the canvas. */
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-md);
+  min-width: 0;
+  padding: var(--pc-pad-panel);
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-lg);
+  box-shadow: var(--pc-shadow-1);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  padding: 20px;
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-md);
+  box-shadow: var(--pc-shadow-1);
+}
+
+.headingRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--pc-gap-xs);
+}
+
+.pageHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--pc-gap-md);
+}
+
+.pageHeaderText {
+  display: flex;
+  flex: 1 1 420px;
+  flex-direction: column;
+  gap: var(--pc-gap-xs);
+  max-width: 760px;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pc-gap-sm);
+}
+
+.banner {
+  border-radius: var(--pc-radius-md);
+}
+
+.row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--pc-gap-lg);
+}

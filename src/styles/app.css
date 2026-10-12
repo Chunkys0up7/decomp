@@ -1,0 +1,13 @@
+/* Sizing and the page canvas only (SALT-18, visual spec 3 rule 1). */
+html,
+body,
+#root {
+  height: 100%;
+}
+
+.appRoot {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: var(--pc-canvas);
+}

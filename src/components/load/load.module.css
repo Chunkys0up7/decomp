@@ -1,0 +1,321 @@
+.pageHeader {
+  padding-top: var(--pc-gap-xs);
+}
+
+.columns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--pc-gap-lg);
+}
+
+.left {
+  display: flex;
+  flex: 1.6 1 560px;
+  flex-direction: column;
+  gap: var(--pc-gap-lg);
+  min-width: 0;
+}
+
+.right {
+  display: flex;
+  flex: 1 1 400px;
+  flex-direction: column;
+  gap: var(--pc-gap-lg);
+  min-width: 0;
+}
+
+/* Empty state: dropzone hero */
+.hero {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pc-gap-xs);
+  min-height: 280px;
+  border-radius: var(--pc-radius-md);
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--pc-gap-sm);
+  min-height: 280px;
+}
+
+/* Ready: document panel */
+.docPanel {
+  gap: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+.docHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pc-gap-sm);
+  padding: var(--pc-gap-md) var(--pc-pad-panel);
+  border-bottom: 1px solid var(--pc-border);
+}
+
+.docName {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.parsed {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.docBody {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+/* The tinted mat is what keeps the preview from looking grey (visual spec 8.2). */
+.mat {
+  display: flex;
+  flex: 0 0 280px;
+  justify-content: center;
+  align-items: flex-start;
+  padding: var(--pc-pad-panel);
+  background: var(--pc-surface-tint);
+  border-right: 1px solid var(--pc-border);
+}
+
+.page {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  width: 200px;
+  height: 284px;
+  padding: 20px 18px;
+  box-sizing: border-box;
+  overflow: hidden;
+  background: var(--pc-surface);
+  border-radius: var(--pc-radius-sm);
+  box-shadow: var(--pc-shadow-2);
+}
+
+.line {
+  display: block;
+  flex: none;
+  border-radius: var(--pc-radius-pill);
+}
+.line[data-kind="title"] { background: var(--pc-ink-2); }
+.line[data-kind="subtitle"] { background: var(--pc-border-strong); }
+.line[data-kind="section"] { background: var(--pc-ink-3); }
+.line[data-kind="passage"] { background: var(--pc-accent-tint); }
+
+.structure {
+  display: flex;
+  flex: 1 1 280px;
+  flex-direction: column;
+  gap: var(--pc-gap-sm);
+  padding: var(--pc-pad-panel);
+  min-width: 0;
+}
+
+.sections {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-xs);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.sectionRow {
+  display: grid;
+  grid-template-columns: 24px minmax(0, 1fr) auto 84px;
+  align-items: center;
+  gap: var(--pc-gap-sm);
+  padding: var(--pc-pad-row);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-sm);
+}
+
+.bars {
+  display: flex;
+  gap: 3px;
+}
+
+.bar {
+  width: 8px;
+  height: 16px;
+  border-radius: var(--pc-radius-pill);
+  background: var(--pc-accent);
+}
+
+.count {
+  text-align: right;
+}
+
+/* Referenced documents */
+.extras {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-sm);
+}
+
+.strip {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pc-gap-md);
+  padding: var(--pc-gap-sm) var(--pc-gap-md);
+  background: var(--pc-surface-sunken);
+  border: 1.5px dashed var(--pc-border-strong);
+  border-radius: var(--pc-radius-md);
+  text-align: left;
+}
+
+.stripText {
+  display: flex;
+  flex: 1 1 240px;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pc-gap-xs);
+}
+
+/* Policy details */
+.fields {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); /* 3 columns at full width, 2 then 1 when narrow (spec 9.1.5) */
+  gap: var(--pc-gap-lg) var(--pc-gap-md);
+}
+
+/* Type tiles (UI-27, visual spec 8.2) */
+.tiles {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--pc-gap-sm);
+}
+
+.tile {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-xs);
+  min-height: 112px;
+  padding: var(--pc-gap-md);
+  text-align: left;
+  color: inherit;
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-md);
+  cursor: pointer;
+}
+
+.tile[aria-pressed="true"] {
+  background: var(--pc-surface-tint);
+  border: 2px solid var(--pc-accent);
+  padding: calc(var(--pc-gap-md) - 1px);
+}
+
+.tile:focus-visible {
+  outline: var(--salt-focused-outline);
+  outline-offset: 2px;
+}
+
+.tileTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pc-gap-xs);
+}
+
+.tileName {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pc-gap-xs);
+}
+
+.check {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
+  border-radius: var(--pc-radius-xs);
+  border: 1.5px solid var(--pc-border-strong);
+  color: var(--pc-on-accent);
+}
+
+.check[data-on="true"] {
+  background: var(--pc-accent);
+  border-color: var(--pc-accent);
+}
+
+.granularity {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+}
+
+.granularity > button {
+  flex: 1 1 0;
+  min-width: 0;
+}
+
+.checks {
+  display: flex;
+  flex-direction: column;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.checkRow {
+  padding: var(--pc-gap-xs) 0;
+  border-bottom: 1px solid var(--pc-border);
+}
+
+.checkRow:last-child {
+  border-bottom: none;
+}
+
+/* Sticky action bar (visual spec 8.2, 7.2) */
+.actionBar {
+  position: sticky;
+  bottom: var(--pc-gap-md);
+  z-index: 2;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pc-gap-md);
+  min-height: 72px;
+  padding: var(--pc-gap-md) var(--pc-gap-xl);
+  box-sizing: border-box;
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-lg);
+  box-shadow: var(--pc-shadow-2);
+}
+
+.actionButtons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--pc-gap-sm);
+}
+
+@media (max-width: 767px) {
+  .mat { flex-basis: 100%; border-right: none; border-bottom: 1px solid var(--pc-border); }
+  .tiles { grid-template-columns: minmax(0, 1fr); }
+  .actionBar { padding: var(--pc-gap-sm) var(--pc-gap-md); }
+}

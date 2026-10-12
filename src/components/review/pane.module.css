@@ -1,0 +1,39 @@
+/* Shared review pane: a white rounded panel with its own scroll and a sticky header (UI-32). */
+.pane {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  overflow: auto;
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-lg);
+  box-shadow: var(--pc-shadow-1);
+}
+
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pc-gap-sm);
+  padding: var(--pc-gap-md) 20px;
+  background: var(--pc-surface);
+  border-bottom: 1px solid var(--pc-border);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-lg);
+  padding: 20px;
+}
+
+.microHeading {
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--pc-ink-3);
+}

@@ -1,0 +1,53 @@
+{
+  "name": "policy-cards",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint src",
+    "verify:tokens": "node scripts/verify-tokens.mjs",
+    "test": "vitest run",
+    "e2e": "playwright test",
+    "e2e:salt": "playwright test e2e/salt-check.spec.ts",
+    "verify": "npm run typecheck && npm run lint && npm run verify:tokens && npm run test && npm run e2e",
+    "validate:cards": "node pipeline/validate.mjs"
+  },
+  "dependencies": {
+    "@fontsource/open-sans": "^5.3.0",
+    "@fontsource/pt-mono": "^5.3.0",
+    "@salt-ds/core": "1.72.0",
+    "@salt-ds/icons": "1.18.3",
+    "@salt-ds/theme": "1.47.0",
+    "ajv": "^8.20.0",
+    "canonicalize": "^5.1.0",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "react-router-dom": "^7.18.4"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "^4.13.0",
+    "@eslint/js": "^9.39.5",
+    "@playwright/test": "^1.64.0",
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@testing-library/user-event": "^14.6.7",
+    "@types/node": "^26.6.5",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "cross-env": "^10.1.0",
+    "eslint": "^9.39.5",
+    "eslint-plugin-jsx-a11y": "^6.10.2",
+    "eslint-plugin-react-hooks": "^7.1.1",
+    "globals": "^17.13.0",
+    "jsdom": "^29.1.1",
+    "prettier": "^3.9.10",
+    "typescript": "~6.0.0",
+    "typescript-eslint": "^8.71.1",
+    "vite": "^8.3.4",
+    "vitest": "^5.0.4"
+  }
+}

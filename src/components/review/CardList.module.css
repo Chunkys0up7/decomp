@@ -1,0 +1,92 @@
+/* Narrow pane: title above a full-width filter group. */
+.header {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+/* Salt toggle buttons have a fixed height, so whole buttons wrap rather than their labels. */
+.filters {
+  flex-wrap: wrap;
+  align-self: flex-start;
+}
+
+.filters > button {
+  white-space: nowrap;
+}
+
+.empty {
+  padding: 20px;
+}
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-xs);
+  margin: 0;
+  padding: var(--pc-gap-sm);
+  list-style: none;
+}
+
+.row {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  gap: var(--pc-gap-sm);
+  width: 100%;
+  min-height: 72px;
+  padding: var(--pc-pad-row);
+  text-align: left;
+  color: inherit;
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-md);
+  cursor: pointer;
+}
+
+.row:hover {
+  box-shadow: var(--pc-shadow-2);
+}
+
+.row:focus-visible {
+  outline: var(--salt-focused-outline);
+  outline-offset: 2px;
+}
+
+/* Selected: tint fill plus a 3px accent bar on the left edge (visual spec 3 rule 3). */
+.row[aria-current="true"] {
+  background: var(--pc-surface-tint);
+  border-color: var(--pc-accent-tint);
+  box-shadow: inset 3px 0 0 var(--pc-accent), var(--pc-shadow-1);
+}
+
+.glyph {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--pc-radius-pill);
+  background: var(--pc-type-rule-tint);
+}
+.glyph[data-type="fact"] { background: var(--pc-type-fact-tint); }
+.glyph[data-type="calculation"] { background: var(--pc-type-calculation-tint); }
+.glyph[data-type="procedure"] { background: var(--pc-type-procedure-tint); }
+
+.body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  min-width: 0;
+}
+
+.meta {
+  display: flex;
+  gap: var(--pc-gap-xs);
+}
+
+.title {
+  overflow-wrap: anywhere;
+}

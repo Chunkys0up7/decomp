@@ -1,0 +1,105 @@
+/* The only file allowed raw colour values (visual spec 4.1, SALT-17 as revised by section 11). */
+
+/* ============ App palette ============ */
+.salt-theme {
+  /* Canvas and surfaces */
+  --pc-canvas: #F3F5F8;
+  --pc-surface: #FFFFFF;
+  --pc-surface-tint: #EEF4FF;
+  --pc-surface-sunken: #F7F9FC;
+  --pc-border: #DDE3EC;
+  --pc-border-strong: #C3CCDA;
+
+  /* Text: navy ink, never neutral grey */
+  --pc-ink: #14213D;
+  --pc-ink-2: #44546F;
+  --pc-ink-3: #5B6B84;
+
+  /* Accent (the one action colour) */
+  --pc-accent: #1F5FD1;
+  --pc-accent-hover: #1A52B5;
+  --pc-accent-active: #153F8E;
+  --pc-accent-tint: #E8F0FD;
+  --pc-on-accent: #FFFFFF;
+
+  /* Card types: hue + fg (on tint and white) + tint (bg) */
+  --pc-type-fact: #0E8A8F;        --pc-type-fact-fg: #0B6E72;        --pc-type-fact-tint: #E3F4F4;
+  --pc-type-rule: #3B4FD8;        --pc-type-rule-fg: #3B4FD8;        --pc-type-rule-tint: #ECEEFD;
+  --pc-type-calculation: #A83FC2; --pc-type-calculation-fg: #8A2BA0; --pc-type-calculation-tint: #F6E8FA;
+  --pc-type-procedure: #2E9455;   --pc-type-procedure-fg: #1B6B3A;   --pc-type-procedure-tint: #E4F5EA;
+
+  /* Status (only for status) */
+  --pc-error-fg: #B42318;   --pc-error-tint: #FDECEA;   --pc-error-border: #F3B8B2;
+  --pc-warning-fg: #8A5A00; --pc-warning-tint: #FFF4D6; --pc-warning-border: #F0D58A;
+  --pc-info-fg: #1F5FD1;    --pc-info-tint: #E8F0FD;    --pc-info-border: #B9D0F5;
+  --pc-success-fg: #1B6B3A; --pc-success-tint: #E4F5EA; --pc-success-border: #A9DDBB;
+
+  /* Evidence marker in the source pane */
+  --pc-evidence: #FFE9A8;
+  --pc-passage-linked: #EEF4FF;
+
+  /* Shape */
+  --pc-radius-xs: 4px; /* evidence marks and swatches only (visual spec 8.4) */
+  --pc-radius-sm: 8px;
+  --pc-radius-md: 12px;
+  --pc-radius-lg: 16px;
+  --pc-radius-pill: 999px;
+
+  /* Elevation (soft, navy-tinted, never black) */
+  --pc-shadow-1: 0 1px 2px rgba(20, 33, 61, 0.06), 0 1px 3px rgba(20, 33, 61, 0.05);
+  --pc-shadow-2: 0 2px 4px rgba(20, 33, 61, 0.05), 0 8px 24px rgba(20, 33, 61, 0.08);
+  --pc-ring: 0 0 0 3px rgba(31, 95, 209, 0.28);
+
+  /* Space (multiples of 4, named by intent) */
+  --pc-gap-xs: 8px;
+  --pc-gap-sm: 12px;
+  --pc-gap-md: 16px;
+  --pc-gap-lg: 24px;
+  --pc-gap-xl: 32px;
+  --pc-pad-panel: 24px;
+  --pc-pad-row: 14px 16px;
+  --pc-page-gutter: 32px;
+}
+
+/* ============ Re-theme Salt (visual spec 4.2) ============
+   Salt 1.72 / theme 1.47 declares characteristics on `.salt-theme.salt-theme-next`; this selector is
+   more specific, so it wins without !important. Token names are the installed ones (docs/salt-tokens.txt);
+   the spec's guessed names that do not exist (actionable-cta-*, status-*-foreground) are mapped below. */
+.salt-theme.salt-theme-next[data-mode="light"] {
+  /* containers */
+  --salt-container-primary-background: var(--pc-surface);
+  --salt-container-secondary-background: var(--pc-surface-sunken);
+  --salt-container-tertiary-background: var(--pc-surface-sunken);
+  --salt-container-primary-borderColor: var(--pc-border);
+
+  /* text */
+  --salt-content-primary-foreground: var(--pc-ink);
+  --salt-content-secondary-foreground: var(--pc-ink-2);
+
+  /* the call-to-action button (Button appearance="solid" sentiment="accented") */
+  --salt-actionable-accented-bold-background: var(--pc-accent);
+  --salt-actionable-accented-bold-background-hover: var(--pc-accent-hover);
+  --salt-actionable-accented-bold-background-active: var(--pc-accent-active);
+  --salt-actionable-accented-bold-foreground: var(--pc-on-accent);
+  --salt-actionable-accented-bold-foreground-hover: var(--pc-on-accent);
+  --salt-actionable-accented-bold-foreground-active: var(--pc-on-accent);
+  --salt-actionable-accented-bold-borderColor: var(--pc-accent);
+  --salt-actionable-accented-bold-borderColor-hover: var(--pc-accent-hover);
+  --salt-actionable-accented-bold-borderColor-active: var(--pc-accent-active);
+  --salt-accent-background: var(--pc-accent);
+  --salt-accent-borderColor: var(--pc-accent);
+
+  /* selection */
+  --salt-selectable-background-selected: var(--pc-surface-tint);
+  --salt-selectable-borderColor-selected: var(--pc-accent);
+
+  /* borders */
+  --salt-separable-primary-borderColor: var(--pc-border);
+  --salt-separable-secondary-borderColor: var(--pc-border);
+
+  /* status text */
+  --salt-status-error-foreground-informative: var(--pc-error-fg);
+  --salt-status-warning-foreground-informative: var(--pc-warning-fg);
+  --salt-status-success-foreground-informative: var(--pc-success-fg);
+  --salt-status-info-foreground-informative: var(--pc-info-fg);
+}

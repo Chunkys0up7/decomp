@@ -1,0 +1,36 @@
+.header {
+  align-items: flex-start;
+  padding: 20px;
+}
+
+.identity {
+  display: flex;
+  flex: 1 1 240px;
+  flex-direction: column;
+  gap: var(--pc-gap-xs);
+  min-width: 0;
+}
+
+.idRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pc-gap-xs);
+}
+
+.title {
+  margin: 0;
+  overflow-wrap: anywhere;
+}
+
+.actions {
+  display: flex;
+  flex-basis: 100%;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pc-gap-xs);
+}
+
+.panel {
+  padding-top: var(--pc-gap-md);
+}

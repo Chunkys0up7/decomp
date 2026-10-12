@@ -1,0 +1,128 @@
+.inherit { color: inherit; }
+
+.headerText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.titleRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--pc-gap-xs);
+}
+
+.legend {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pc-gap-xs);
+}
+
+.swatch {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border-radius: var(--pc-radius-xs);
+  background: var(--pc-evidence);
+  border: 1px solid var(--pc-warning-border);
+}
+
+.body {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-xs);
+  padding: var(--pc-gap-md) 20px 20px;
+}
+
+.passage {
+  display: flex;
+  flex-direction: column;
+  gap: var(--pc-gap-xs);
+  padding: var(--pc-gap-md);
+  background: var(--pc-surface);
+  border: 1px solid var(--pc-border);
+  border-radius: var(--pc-radius-sm);
+}
+
+/* Cited by the selected card: linked fill plus the 3px accent bar (visual spec 8.4). */
+.passage[data-linked="true"] {
+  background: var(--pc-passage-linked);
+  border-color: var(--pc-accent-tint);
+  box-shadow: inset 3px 0 0 var(--pc-accent);
+}
+
+.passage[data-uncovered="true"] {
+  background: var(--pc-warning-tint);
+  border-color: var(--pc-warning-border);
+}
+
+.passageTop {
+  display: flex;
+  justify-content: space-between;
+  gap: var(--pc-gap-xs);
+}
+
+.text {
+  max-width: 68ch;
+  white-space: pre-wrap;
+}
+
+.evidence {
+  background: var(--pc-evidence);
+  color: var(--pc-ink);
+  padding: 2px 4px;
+  border-radius: var(--pc-radius-xs);
+  box-decoration-break: clone;
+  -webkit-box-decoration-break: clone;
+  text-decoration: underline 2px var(--pc-warning-border);
+  text-underline-offset: 3px;
+}
+
+.issueTag {
+  display: inline-flex;
+  align-items: center;
+  padding: 0 var(--pc-gap-xs);
+  border: 1px solid transparent;
+  border-radius: var(--pc-radius-pill);
+}
+.issueTag[data-severity="error"] { background: var(--pc-error-tint); border-color: var(--pc-error-border); color: var(--pc-error-fg); }
+.issueTag[data-severity="warning"] { background: var(--pc-warning-tint); border-color: var(--pc-warning-border); color: var(--pc-warning-fg); }
+.issueTag[data-severity="info"] { background: var(--pc-info-tint); border-color: var(--pc-info-border); color: var(--pc-info-fg); }
+
+.chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 24px;
+  padding: 2px 10px 2px 8px;
+  border: 1px solid transparent;
+  border-radius: var(--pc-radius-pill);
+  background: var(--pc-type-rule-tint);
+  color: var(--pc-type-rule-fg);
+  cursor: pointer;
+}
+.chip[data-type="fact"] { background: var(--pc-type-fact-tint); color: var(--pc-type-fact-fg); }
+.chip[data-type="calculation"] { background: var(--pc-type-calculation-tint); color: var(--pc-type-calculation-fg); }
+.chip[data-type="procedure"] { background: var(--pc-type-procedure-tint); color: var(--pc-type-procedure-fg); }
+.chip[aria-pressed="true"] { border-color: var(--pc-accent); }
+.chip:focus-visible { outline: var(--salt-focused-outline); outline-offset: 2px; }
+
+.uncoveredRow {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pc-gap-sm);
+}
+
+.noCard {
+  color: var(--pc-warning-fg);
+}

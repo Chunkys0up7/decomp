@@ -1,0 +1,5 @@
+/* The H1 receives programmatic focus on route change (A11Y-01). It is not a control, so it shows
+   no focus ring; every interactive element keeps Salt's ring (A11Y-04). */
+.title:focus {
+  outline: none;
+}

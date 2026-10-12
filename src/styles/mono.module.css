@@ -1,0 +1,9 @@
+/* The one file allowed to set a font family: Salt's code font token (spec 4.8, Appendix C notes). */
+.mono {
+  font-family: var(--salt-text-code-fontFamily);
+}
+
+/* For Salt Input: the class goes on the outer element (never via inputProps, which replaces Salt's own input class). */
+.monoField input {
+  font-family: var(--salt-text-code-fontFamily);
+}

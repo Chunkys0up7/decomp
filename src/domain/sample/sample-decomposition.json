@@ -1,0 +1,570 @@
+{
+  "runId": "run-sample-001",
+  "policy": {
+    "policyId": "POL-HL-0142",
+    "version": "3.1",
+    "effectiveFrom": "2026-01-01",
+    "domain": "home-lending / underwriting",
+    "channel": "retail",
+    "owner": "Underwriting Policy"
+  },
+  "applicability": {
+    "loanType": "conventional",
+    "lien": "first",
+    "occupancy": "primary",
+    "channel": "retail"
+  },
+  "passages": [
+    {
+      "id": "p1",
+      "order": 1,
+      "sectionNo": "1",
+      "sectionTitle": "Scope",
+      "ref": "1.1",
+      "label": "Applies to conventional first-lien applications",
+      "text": "This policy applies to all conventional first-lien mortgage applications submitted through the retail channel for owner-occupied primary residences."
+    },
+    {
+      "id": "p2",
+      "order": 2,
+      "sectionNo": "2",
+      "sectionTitle": "Qualifying income",
+      "ref": "2.1",
+      "label": "Salaried income and verification",
+      "text": "Qualifying income for salaried borrowers is the gross monthly base pay, verified by pay stubs covering the most recent 30 days and a written verification of employment dated within 10 business days of closing."
+    },
+    {
+      "id": "p3",
+      "order": 3,
+      "sectionNo": "2",
+      "sectionTitle": "Qualifying income",
+      "ref": "2.2",
+      "label": "Variable income inclusion",
+      "text": "Overtime, bonus and commission income may be included only when a two-year history is documented and the income is likely to continue. Where the documented history is under two years, written approval from a Credit Officer is required."
+    },
+    {
+      "id": "p4",
+      "order": 4,
+      "sectionNo": "2",
+      "sectionTitle": "Qualifying income",
+      "ref": "2.3",
+      "label": "Variable income calculation",
+      "text": "Qualifying income from overtime, bonus and commission is calculated as the sum of earnings over the preceding 24 months divided by 24."
+    },
+    {
+      "id": "p5",
+      "order": 5,
+      "sectionNo": "3",
+      "sectionTitle": "Debt-to-income",
+      "ref": "3.1",
+      "label": "Maximum back-end DTI",
+      "text": "The maximum back-end debt-to-income (DTI) ratio is 45%. Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter."
+    },
+    {
+      "id": "p6",
+      "order": 6,
+      "sectionNo": "3",
+      "sectionTitle": "Debt-to-income",
+      "ref": "3.2",
+      "label": "DTI definition",
+      "text": "DTI equals total monthly obligations divided by gross monthly qualifying income, expressed as a percentage."
+    },
+    {
+      "id": "p7",
+      "order": 7,
+      "sectionNo": "4",
+      "sectionTitle": "Handling and exceptions",
+      "ref": "4.1",
+      "label": "Handling DTI above 45%",
+      "text": "When DTI exceeds 45%, the underwriter must document at least two compensating factors, route the file to the Senior Underwriter queue, and record the decision in the loan file within one business day."
+    },
+    {
+      "id": "p8",
+      "order": 8,
+      "sectionNo": "4",
+      "sectionTitle": "Handling and exceptions",
+      "ref": "4.2",
+      "label": "Exceptions refer to guidelines not supplied",
+      "text": "Exceptions to this policy are handled in accordance with the exception handling guidelines."
+    },
+    {
+      "id": "p9",
+      "order": 9,
+      "sectionNo": "5",
+      "sectionTitle": "Reserves",
+      "ref": "5.1",
+      "label": "Reserve adequacy",
+      "text": "Reserves must be adequate for the loan type."
+    }
+  ],
+  "cards": [
+    {
+      "seq": 1,
+      "shortId": "F-001",
+      "cardId": "PC-HL0142-F001",
+      "uri": "pc://hl/pol-0142/v3.1/fact/001",
+      "type": "fact",
+      "title": "Policy scope",
+      "fields": [
+        {
+          "key": "statement",
+          "label": "Statement",
+          "value": "This policy applies to conventional first-lien mortgage applications for owner-occupied primary residences submitted through the retail channel."
+        },
+        {
+          "key": "applies_to",
+          "label": "Applies to",
+          "value": "loan_type = conventional; lien = first; occupancy = primary; channel = retail",
+          "mono": true
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p1",
+          "start": 12,
+          "end": 147,
+          "quote": "applies to all conventional first-lien mortgage applications submitted through the retail channel for owner-occupied primary residences"
+        }
+      ],
+      "tags": [
+        "scope",
+        "eligibility",
+        "applicability"
+      ],
+      "confidence": 0.97,
+      "machineEvaluable": true,
+      "issueIds": [],
+      "relations": []
+    },
+    {
+      "seq": 2,
+      "shortId": "R-002",
+      "cardId": "PC-HL0142-R002",
+      "uri": "pc://hl/pol-0142/v3.1/rule/002",
+      "type": "rule",
+      "title": "Salaried income verification",
+      "fields": [
+        {
+          "key": "when",
+          "label": "When",
+          "value": "Borrower income type is salaried."
+        },
+        {
+          "key": "then",
+          "label": "Then",
+          "value": "Qualifying income is gross monthly base pay. Required evidence: pay stubs covering the most recent 30 days AND a written verification of employment (VOE)."
+        },
+        {
+          "key": "constraint",
+          "label": "Constraint",
+          "value": "VOE date is within 10 business days of closing."
+        },
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "income_type, base_pay_gross_monthly, paystub_coverage_days, voe_date, closing_date",
+          "mono": true
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p2",
+          "start": 48,
+          "end": 208,
+          "quote": "gross monthly base pay, verified by pay stubs covering the most recent 30 days and a written verification of employment dated within 10 business days of closing"
+        }
+      ],
+      "tags": [
+        "income",
+        "salaried",
+        "verification"
+      ],
+      "confidence": 0.94,
+      "machineEvaluable": true,
+      "issueIds": [],
+      "relations": []
+    },
+    {
+      "seq": 3,
+      "shortId": "R-003",
+      "cardId": "PC-HL0142-R003",
+      "uri": "pc://hl/pol-0142/v3.1/rule/003",
+      "type": "rule",
+      "title": "Variable income inclusion",
+      "fields": [
+        {
+          "key": "when",
+          "label": "When",
+          "value": "Income type is overtime, bonus or commission."
+        },
+        {
+          "key": "then",
+          "label": "Then",
+          "value": "Include in qualifying income only if a two-year history is documented AND the income is likely to continue."
+        },
+        {
+          "key": "else",
+          "label": "Else",
+          "value": "If documented history is under two years: require written Credit Officer approval before inclusion."
+        },
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "income_type, history_months, likely_to_continue, credit_officer_approval",
+          "mono": true
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p3",
+          "start": 38,
+          "end": 133,
+          "quote": "may be included only when a two-year history is documented and the income is likely to continue"
+        },
+        {
+          "passageId": "p3",
+          "start": 135,
+          "end": 234,
+          "quote": "Where the documented history is under two years, written approval from a Credit Officer is required"
+        }
+      ],
+      "tags": [
+        "income",
+        "variable",
+        "overtime",
+        "bonus",
+        "commission"
+      ],
+      "confidence": 0.91,
+      "machineEvaluable": true,
+      "issueIds": [
+        "ISS-02"
+      ],
+      "relations": []
+    },
+    {
+      "seq": 4,
+      "shortId": "C-004",
+      "cardId": "PC-HL0142-C004",
+      "uri": "pc://hl/pol-0142/v3.1/calculation/004",
+      "type": "calculation",
+      "title": "Variable income calculation",
+      "fields": [
+        {
+          "key": "applies_when",
+          "label": "Applies when",
+          "value": "Income type is overtime, bonus or commission."
+        },
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "monthly_earnings[24] (USD, preceding 24 months)",
+          "mono": true
+        },
+        {
+          "key": "formula",
+          "label": "Formula",
+          "value": "qualifying_monthly_income = sum(monthly_earnings) / 24",
+          "mono": true
+        },
+        {
+          "key": "output",
+          "label": "Output",
+          "value": "qualifying_monthly_income (USD per month)",
+          "mono": true
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p4",
+          "start": 57,
+          "end": 133,
+          "quote": "calculated as the sum of earnings over the preceding 24 months divided by 24"
+        }
+      ],
+      "tags": [
+        "income",
+        "variable",
+        "calculation",
+        "average"
+      ],
+      "confidence": 0.88,
+      "machineEvaluable": true,
+      "issueIds": [
+        "ISS-02"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "shortId": "R-003"
+        }
+      ]
+    },
+    {
+      "seq": 5,
+      "shortId": "R-005",
+      "cardId": "PC-HL0142-R005",
+      "uri": "pc://hl/pol-0142/v3.1/rule/005",
+      "type": "rule",
+      "title": "Maximum back-end DTI",
+      "fields": [
+        {
+          "key": "when",
+          "label": "When",
+          "value": "dti_percent has been calculated."
+        },
+        {
+          "key": "then",
+          "label": "Then",
+          "value": "Permitted if dti_percent <= 45."
+        },
+        {
+          "key": "else_if",
+          "label": "Else if",
+          "value": "45 < dti_percent <= 50: permitted only with compensating factors approved by a Senior Underwriter."
+        },
+        {
+          "key": "otherwise",
+          "label": "Otherwise",
+          "value": "dti_percent > 50: not permitted.",
+          "inferred": true
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p5",
+          "start": 0,
+          "end": 145,
+          "quote": "The maximum back-end debt-to-income (DTI) ratio is 45%. Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter"
+        }
+      ],
+      "tags": [
+        "dti",
+        "limit",
+        "underwriting"
+      ],
+      "confidence": 0.9,
+      "machineEvaluable": true,
+      "issueIds": [
+        "ISS-04",
+        "ISS-05"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "shortId": "C-006"
+        }
+      ]
+    },
+    {
+      "seq": 6,
+      "shortId": "C-006",
+      "cardId": "PC-HL0142-C006",
+      "uri": "pc://hl/pol-0142/v3.1/calculation/006",
+      "type": "calculation",
+      "title": "DTI calculation",
+      "fields": [
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "total_monthly_obligations (USD), gross_monthly_qualifying_income (USD)",
+          "mono": true
+        },
+        {
+          "key": "formula",
+          "label": "Formula",
+          "value": "dti_percent = total_monthly_obligations / gross_monthly_qualifying_income * 100",
+          "mono": true
+        },
+        {
+          "key": "output",
+          "label": "Output",
+          "value": "dti_percent (percent)",
+          "mono": true
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p6",
+          "start": 0,
+          "end": 106,
+          "quote": "DTI equals total monthly obligations divided by gross monthly qualifying income, expressed as a percentage"
+        }
+      ],
+      "tags": [
+        "dti",
+        "calculation"
+      ],
+      "confidence": 0.96,
+      "machineEvaluable": true,
+      "issueIds": [],
+      "relations": []
+    },
+    {
+      "seq": 7,
+      "shortId": "P-007",
+      "cardId": "PC-HL0142-P007",
+      "uri": "pc://hl/pol-0142/v3.1/procedure/007",
+      "type": "procedure",
+      "title": "Handling DTI above 45%",
+      "fields": [
+        {
+          "key": "trigger",
+          "label": "Trigger",
+          "value": "dti_percent > 45",
+          "mono": true
+        },
+        {
+          "key": "step_1",
+          "label": "Step 1",
+          "value": "Underwriter: document at least two compensating factors in the loan file."
+        },
+        {
+          "key": "step_2",
+          "label": "Step 2",
+          "value": "Underwriter: route the file to the Senior Underwriter queue."
+        },
+        {
+          "key": "step_3",
+          "label": "Step 3",
+          "value": "Underwriter: record the decision in the loan file."
+        },
+        {
+          "key": "done_when",
+          "label": "Done when",
+          "value": "Decision recorded within 1 business day."
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p7",
+          "start": 43,
+          "end": 199,
+          "quote": "document at least two compensating factors, route the file to the Senior Underwriter queue, and record the decision in the loan file within one business day"
+        },
+        {
+          "passageId": "p5",
+          "start": 56,
+          "end": 145,
+          "quote": "Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter"
+        }
+      ],
+      "tags": [
+        "dti",
+        "exception",
+        "senior-underwriter",
+        "compensating-factors"
+      ],
+      "confidence": 0.9,
+      "machineEvaluable": true,
+      "issueIds": [
+        "ISS-04"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "shortId": "R-005"
+        },
+        {
+          "kind": "depends_on",
+          "shortId": "C-006"
+        }
+      ]
+    },
+    {
+      "seq": 8,
+      "shortId": "R-008",
+      "cardId": "PC-HL0142-R008",
+      "uri": "pc://hl/pol-0142/v3.1/rule/008",
+      "type": "rule",
+      "title": "Reserve adequacy",
+      "fields": [
+        {
+          "key": "source_statement",
+          "label": "Statement as written",
+          "value": "Reserves must be adequate for the loan type."
+        },
+        {
+          "key": "then",
+          "label": "Then",
+          "value": "Not evaluable: no threshold, unit or loan-type mapping is given."
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p9",
+          "start": 0,
+          "end": 43,
+          "quote": "Reserves must be adequate for the loan type"
+        }
+      ],
+      "tags": [
+        "reserves"
+      ],
+      "confidence": 0.42,
+      "machineEvaluable": false,
+      "issueIds": [
+        "ISS-01"
+      ],
+      "relations": []
+    }
+  ],
+  "issues": [
+    {
+      "id": "ISS-01",
+      "severity": "error",
+      "kind": "not_evaluable",
+      "title": "Not machine-evaluable",
+      "detail": "The passage says reserves must be “adequate” without a threshold, unit or loan-type mapping. An agent cannot evaluate this card.",
+      "fix": "Add the reserve requirement to the source policy, or reject this card and record the gap.",
+      "cardIds": [
+        "R-008"
+      ]
+    },
+    {
+      "id": "ISS-02",
+      "severity": "warning",
+      "kind": "conflict",
+      "title": "Possible conflict with R-003",
+      "detail": "C-004 averages 24 months of earnings, but R-003 allows inclusion with under 24 months of history when a Credit Officer approves. The divisor is undefined for that case.",
+      "fix": "Confirm the divisor for histories under 24 months, then add it as a condition on C-004.",
+      "cardIds": [
+        "R-003",
+        "C-004"
+      ]
+    },
+    {
+      "id": "ISS-03",
+      "severity": "warning",
+      "kind": "unresolved_reference",
+      "title": "Unresolved reference",
+      "detail": "Section 4.2 points to “exception handling guidelines”, which were not supplied. No card was generated for this passage.",
+      "fix": "Load the referenced guidelines as a second document, or mark the passage as out of scope.",
+      "cardIds": [],
+      "passageId": "p8"
+    },
+    {
+      "id": "ISS-04",
+      "severity": "warning",
+      "kind": "undefined_term",
+      "title": "Undefined term",
+      "detail": "“Compensating factors” is used by R-005 and P-007 but is not defined in this policy. An agent cannot check whether a factor qualifies.",
+      "fix": "Link a definition or a list of accepted factors.",
+      "cardIds": [
+        "R-005",
+        "P-007"
+      ]
+    },
+    {
+      "id": "ISS-05",
+      "severity": "info",
+      "kind": "inferred",
+      "title": "Inferred outcome",
+      "detail": "The outcome for DTI above 50% is implied by the passage, not stated. It is marked as inferred on the card.",
+      "fix": "Keep, edit or remove the inferred row before approving.",
+      "cardIds": [
+        "R-005"
+      ]
+    }
+  ]
+}

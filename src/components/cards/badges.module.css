@@ -1,0 +1,36 @@
+.inherit {
+  color: inherit;
+}
+
+.typeChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 10px 3px 8px;
+  border-radius: var(--pc-radius-pill);
+  background: var(--pc-type-rule-tint);
+  color: var(--pc-type-rule-fg);
+  white-space: nowrap;
+}
+.typeChip[data-type="fact"] { background: var(--pc-type-fact-tint); color: var(--pc-type-fact-fg); }
+.typeChip[data-type="calculation"] { background: var(--pc-type-calculation-tint); color: var(--pc-type-calculation-fg); }
+.typeChip[data-type="procedure"] { background: var(--pc-type-procedure-tint); color: var(--pc-type-procedure-fg); }
+
+.badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  min-height: 20px;
+  padding: 0 var(--pc-gap-xs);
+  border: 1px solid transparent;
+  border-radius: var(--pc-radius-pill);
+  white-space: nowrap;
+}
+.badge[data-size="large"] { min-height: 24px; }
+
+.badge[data-severity="error"],
+.badge[data-decision="rejected"] { background: var(--pc-error-tint); border-color: var(--pc-error-border); color: var(--pc-error-fg); }
+.badge[data-severity="warning"] { background: var(--pc-warning-tint); border-color: var(--pc-warning-border); color: var(--pc-warning-fg); }
+.badge[data-severity="info"] { background: var(--pc-info-tint); border-color: var(--pc-info-border); color: var(--pc-info-fg); }
+.badge[data-decision="approved"] { background: var(--pc-success-tint); border-color: var(--pc-success-border); color: var(--pc-success-fg); }
+.badge[data-decision="pending"] { background: var(--pc-surface); border-color: var(--pc-border-strong); color: var(--pc-ink-2); }

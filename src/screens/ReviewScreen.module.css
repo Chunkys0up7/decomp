@@ -1,0 +1,19 @@
+/* Visual spec 7.3: three rounded panels on the canvas, each scrolling on its own; the page does not scroll. */
+.workspace {
+  display: grid;
+  grid-template-columns: minmax(300px, 340px) minmax(0, 1fr) minmax(380px, 460px);
+  gap: var(--pc-gap-lg);
+  height: calc(100dvh - var(--workspace-top, 280px) - var(--pc-gap-lg));
+  min-height: 560px;
+}
+
+/* Below 1280px the panes stack, each capped so the page stays usable (UI-31). */
+@media (max-width: 1279px) {
+  .workspace {
+    grid-template-columns: minmax(0, 1fr);
+    height: auto;
+  }
+  .workspace > section {
+    max-height: min(720px, 80dvh);
+  }
+}

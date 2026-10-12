@@ -1,0 +1,68 @@
+{
+  "$comment": "Pass 1 policy map for the build spec's fictional sample policy POL-HL-0142 v3.1, hand-authored as a reference. A reviewer approves the map BEFORE card extraction. Every normative or definitional passage is assigned to a card slot or an explicit coverage state.",
+  "schema": "policy-map/0.1",
+  "policy": { "id": "POL-HL-0142", "version": "3.1", "effectiveFrom": "2026-01-01" },
+
+  "actors": {
+    "underwriter": "Underwriter handling the file",
+    "senior_underwriter": "Senior Underwriter (approves compensating factors)",
+    "credit_officer": "Credit Officer (approves short variable-income history)"
+  },
+
+  "glossary": {
+    "$comment": "Terms the cards may use. source=local means this map defines it from passages in the policy.",
+    "dti_ratio": { "label": "Back-end debt-to-income ratio", "source": "local", "definedBy": "slot:dti-ratio" },
+    "qualifying_income": { "label": "Gross monthly qualifying income", "source": "local", "definedBy": "slot:salaried-income" },
+    "variable_income": { "label": "Overtime, bonus and commission income", "source": "local" },
+    "compensating_factor": { "label": "Compensating factor", "source": "local", "issues": ["ISS-04"], "note": "Used by 3.1 and 4.1 but never defined." }
+  },
+
+  "parameters": {
+    "$comment": "Every number the policy states lives here once. Cards reference {{ID}}; changing one parameter re-flags every card that uses it.",
+    "PAYSTUB_LOOKBACK_DAYS": { "value": 30, "unit": "days", "passages": ["p2"] },
+    "VOE_MAX_AGE_BUSINESS_DAYS": { "value": 10, "unit": "business days", "passages": ["p2"] },
+    "VARIABLE_INCOME_MONTHS": { "value": 24, "unit": "months", "passages": ["p4"] },
+    "DTI_MAX": { "value": 0.45, "unit": "ratio", "meaning": "Maximum back-end DTI without compensating factors.", "passages": ["p5", "p7"] },
+    "DTI_MAX_WITH_FACTORS": { "value": 0.5, "unit": "ratio", "meaning": "Ceiling when compensating factors are approved by a Senior Underwriter.", "passages": ["p5"] }
+  },
+
+  "inputs": {
+    "$comment": "The data vocabulary an agent evaluates cards against.",
+    "loan.type": { "type": "enum", "values": ["conventional", "government", "jumbo"] },
+    "loan.lien": { "type": "enum", "values": ["first", "second"] },
+    "loan.channel": { "type": "enum", "values": ["retail", "broker", "correspondent"] },
+    "property.occupancy": { "type": "enum", "values": ["primary", "second_home", "investment"] },
+    "borrower.monthly_obligations": { "type": "money/month" },
+    "borrower.qualifying_income": { "type": "money/month" },
+    "variable_income.earnings": { "type": "money", "meaning": "Overtime, bonus and commission earned over the lookback." },
+    "loan.dti_ratio": { "type": "ratio" },
+    "file.factors_approved_by_senior_uw": { "type": "boolean" }
+  },
+
+  "externalRefs": {
+    "doc/exception-handling-guidelines": "Exception handling guidelines (referenced by 4.2, not supplied)"
+  },
+
+  "slots": [
+    { "slot": "scope", "type": "fact", "title": "Policy scope", "passages": ["p1"] },
+    { "slot": "salaried-income", "type": "rule", "title": "Salaried income and verification", "passages": ["p2"] },
+    { "slot": "variable-income-inclusion", "type": "rule", "title": "When variable income may be included", "passages": ["p3"], "issues": ["ISS-02"] },
+    { "slot": "variable-income-calc", "type": "calculation", "title": "Qualifying variable income", "passages": ["p4"], "issues": ["ISS-02"] },
+    { "slot": "dti-ratio", "type": "calculation", "title": "Back-end DTI ratio", "passages": ["p6"] },
+    { "slot": "dti-max", "type": "rule", "title": "Maximum back-end DTI", "passages": ["p5"], "issues": ["ISS-04"] },
+    { "slot": "dti-above-max", "type": "procedure", "title": "Handling DTI above {{DTI_MAX}}", "passages": ["p7"], "issues": ["ISS-04"] },
+    { "slot": "reserves", "type": "rule", "title": "Reserve adequacy", "passages": ["p9"], "issues": ["ISS-01"] }
+  ],
+
+  "coverage": {
+    "$comment": "Normative passages deliberately not turned into cards, each with a state and a reason.",
+    "p8": { "state": "external", "ref": "doc/exception-handling-guidelines", "reason": "Points to guidelines that were not supplied; nothing to decompose until they are." }
+  },
+
+  "issues": [
+    { "id": "ISS-01", "severity": "error", "kind": "not_evaluable", "passages": ["p9"], "title": "Reserves must be \"adequate\" with no threshold", "detail": "No amount, unit or loan-type mapping is given, so an agent cannot evaluate it.", "fix": "Add the reserve requirement to the policy, or reject the card and record the gap." },
+    { "id": "ISS-02", "severity": "warning", "kind": "conflict", "passages": ["p3", "p4"], "title": "Short history allowed, but the calculation needs {{VARIABLE_INCOME_MONTHS}} months", "detail": "2.2 allows under two years of history with approval; 2.3 always averages {{VARIABLE_INCOME_MONTHS}} months.", "fix": "State how to average when the history is shorter." },
+    { "id": "ISS-03", "severity": "warning", "kind": "unresolved_reference", "passages": ["p8"], "title": "Exception guidelines not supplied", "detail": "4.2 defers to a document that is not part of this policy.", "fix": "Load the guidelines as a referenced document." },
+    { "id": "ISS-04", "severity": "warning", "kind": "undefined_term", "passages": ["p5", "p7"], "title": "\"Compensating factors\" is not defined", "detail": "An agent cannot check whether a factor qualifies.", "fix": "Define the term or list accepted factors." }
+  ]
+}

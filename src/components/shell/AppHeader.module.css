@@ -1,0 +1,50 @@
+.header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--pc-gap-md);
+  min-height: 64px;
+  padding: 0 var(--pc-page-gutter);
+  background: var(--pc-surface);
+  box-shadow: var(--pc-shadow-1);
+  position: relative;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: var(--pc-gap-sm);
+  min-width: 0;
+}
+
+.mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--pc-radius-sm);
+  background: var(--pc-accent);
+}
+
+.markText {
+  color: var(--pc-on-accent);
+}
+
+.divider {
+  width: 1px;
+  height: 20px;
+  background: var(--pc-border-strong);
+}
+
+.context {
+  overflow-wrap: anywhere;
+}
+
+.save {
+  display: flex;
+  align-items: center;
+  gap: var(--pc-gap-xs);
+  min-height: 32px;
+}

@@ -1,0 +1,73 @@
+/* Visual spec 8.1: active = accent circle, completed = accent tint with check, upcoming = sunken. */
+.bar {
+  background: var(--pc-surface);
+  border-top: 1px solid var(--pc-border);
+  padding: 0 var(--pc-page-gutter);
+}
+
+.list {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--pc-gap-xs) var(--pc-gap-lg);
+  min-height: 64px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+}
+
+.step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--pc-gap-sm);
+  padding: var(--pc-gap-xs) var(--pc-gap-sm);
+  border-radius: var(--pc-radius-pill);
+  color: inherit;
+  text-decoration: none;
+}
+
+.step:hover:not([data-locked]) {
+  background: var(--pc-surface-tint);
+}
+
+.step:focus-visible {
+  outline: var(--salt-focused-outline);
+  outline-offset: 2px;
+}
+
+.step[data-locked] {
+  cursor: not-allowed;
+}
+
+.marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: var(--pc-radius-pill);
+  background: var(--pc-surface-sunken);
+  border: 1px solid var(--pc-border-strong);
+  color: var(--pc-ink-3);
+}
+
+.marker[data-status="current"] {
+  background: var(--pc-accent);
+  border-color: var(--pc-accent);
+  color: var(--pc-on-accent);
+}
+
+.marker[data-status="complete"] {
+  background: var(--pc-accent-tint);
+  border-color: var(--pc-accent-tint);
+  color: var(--pc-accent);
+}
+
+.label[data-status="upcoming"] {
+  color: var(--pc-ink-3);
+}
