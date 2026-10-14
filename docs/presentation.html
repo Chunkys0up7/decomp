@@ -1,0 +1,446 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Policy Cards</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700&family=PT+Mono&display=swap" />
+<style>
+  :root {
+    --canvas: #F3F5F8; --surface: #FFFFFF; --tint: #EEF4FF; --sunken: #F7F9FC;
+    --border: #DDE3EC; --border-strong: #C3CCDA;
+    --ink: #14213D; --ink-2: #44546F; --ink-3: #5B6B84;
+    --accent: #1F5FD1; --accent-tint: #E8F0FD;
+    --fact: #0E8A8F; --fact-tint: #E3F4F4; --rule: #3B4FD8; --rule-tint: #ECEEFD;
+    --calc: #8A2BA0; --calc-tint: #F6E8FA; --proc: #1B6B3A; --proc-tint: #E4F5EA;
+    --error: #B42318; --error-tint: #FDECEA; --warn: #8A5A00; --warn-tint: #FFF4D6; --ok: #1B6B3A; --ok-tint: #E4F5EA;
+    --evidence: #FFE9A8;
+    --shadow: 0 2px 4px rgba(20,33,61,.05), 0 8px 24px rgba(20,33,61,.08);
+    --mono: "PT Mono", ui-monospace, Consolas, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body { background: var(--canvas); color: var(--ink); font: 400 18px/1.55 "Open Sans", system-ui, sans-serif; }
+  .deck { height: 100%; }
+  .slide {
+    display: none; height: 100vh; padding: 56px 72px 72px; flex-direction: column; gap: 28px; overflow: auto;
+  }
+  .slide.active { display: flex; }
+  h1 { font-size: 52px; line-height: 1.1; margin: 0; letter-spacing: -.5px; }
+  h2 { font-size: 36px; line-height: 1.15; margin: 0; letter-spacing: -.3px; }
+  h3 { font-size: 20px; margin: 0 0 6px; }
+  p { margin: 0; }
+  .kicker { font-size: 14px; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); }
+  .lede { font-size: 22px; color: var(--ink-2); max-width: 70ch; }
+  .muted { color: var(--ink-2); }
+  .small { font-size: 15px; }
+  code, .mono { font-family: var(--mono); font-size: .92em; }
+  .grid { display: grid; gap: 20px; }
+  .g2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .g3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .g4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .panel { background: var(--surface); border: 1px solid var(--border); border-radius: 16px; box-shadow: var(--shadow); padding: 24px; }
+  .panel.tint { background: var(--tint); border-color: var(--accent-tint); }
+  .row { display: flex; gap: 20px; align-items: stretch; }
+  .grow { flex: 1; min-width: 0; }
+  ul.clean { margin: 0; padding-left: 20px; }
+  ul.clean li { margin: 6px 0; }
+  .stat { font-size: 46px; font-weight: 700; line-height: 1; }
+  .shot { width: 100%; border-radius: 12px; border: 1px solid var(--border); box-shadow: var(--shadow); display: block; }
+  .shot-frame { flex: 1.6; min-width: 0; }
+  .chip { display: inline-flex; align-items: center; gap: 6px; padding: 3px 12px; border-radius: 999px; font-size: 15px; font-weight: 600; }
+  .chip.fact { background: var(--fact-tint); color: #0B6E72; } .chip.rule { background: var(--rule-tint); color: var(--rule); }
+  .chip.calc { background: var(--calc-tint); color: var(--calc); } .chip.proc { background: var(--proc-tint); color: var(--proc); }
+  pre { margin: 0; padding: 18px 20px; background: var(--sunken); border: 1px solid var(--border); border-radius: 12px; font: 14.5px/1.5 var(--mono); overflow: auto; white-space: pre-wrap; }
+  .k { color: var(--rule); } .s { color: #0B6E72; } .p { color: var(--calc); font-weight: 700; }
+  mark { background: var(--evidence); color: var(--ink); padding: 1px 4px; border-radius: 4px; }
+  table { border-collapse: collapse; width: 100%; font-size: 16px; }
+  th, td { text-align: left; padding: 9px 12px; border-bottom: 1px solid var(--border); vertical-align: top; }
+  th { font-size: 13px; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); }
+  .tag { font-family: var(--mono); font-size: 13px; padding: 2px 8px; border-radius: 6px; background: var(--accent-tint); color: var(--accent); white-space: nowrap; }
+  .bad { background: var(--error-tint); color: var(--error); } .good { background: var(--ok-tint); color: var(--ok); }
+  .nav {
+    position: fixed; left: 0; right: 0; bottom: 0; display: flex; align-items: center; gap: 16px; padding: 12px 24px;
+    background: rgba(243,245,248,.92); backdrop-filter: blur(6px); border-top: 1px solid var(--border); font-size: 14px; color: var(--ink-2);
+  }
+  .nav button { font: inherit; padding: 6px 14px; border-radius: 8px; border: 1px solid var(--border-strong); background: var(--surface); color: var(--ink); cursor: pointer; }
+  .nav button:focus-visible { outline: 3px solid rgba(31,95,209,.35); outline-offset: 2px; }
+  .bar { flex: 1; height: 4px; border-radius: 999px; background: var(--border); overflow: hidden; }
+  .bar span { display: block; height: 100%; background: var(--accent); transition: width .2s; }
+  svg text { font-family: "Open Sans", system-ui, sans-serif; }
+  @media (prefers-reduced-motion: reduce) { .bar span { transition: none; } }
+  @media (max-width: 900px) {
+    body { font-size: 16px; }
+    .slide { height: auto; min-height: 100vh; padding: 28px 16px 88px; }
+    h1 { font-size: 34px; } h2 { font-size: 26px; } .lede { font-size: 18px; }
+    .g2, .g3, .g4 { grid-template-columns: minmax(0, 1fr); }
+    .row { flex-direction: column; }
+  }
+  @media print {
+    @page { size: 1440px 900px; margin: 0; }
+    .nav { display: none; }
+    .slide { display: flex !important; height: 900px; page-break-after: always; break-after: page; }
+  }
+</style>
+</head>
+<body>
+<main class="deck" id="deck">
+
+  <!-- 1 Title -->
+  <section class="slide" aria-label="Title">
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:28px; max-width:1100px">
+      <span class="kicker">decomp · Policy Cards</span>
+      <h1>From procedural documents to agent-ready policy cards</h1>
+      <p class="lede">A decomposition method that keeps a whole document cohesive, controlled and reviewable, and a review application that turns the result into published, traceable artifacts.</p>
+      <div style="display:flex; gap:10px; flex-wrap:wrap">
+        <span class="chip fact">● Fact</span><span class="chip rule">◆ Rule</span><span class="chip calc">■ Calculation</span><span class="chip proc">▲ Procedure</span>
+      </div>
+    </div>
+    <p class="muted small">github.com/Chunkys0up7/decomp · October 2026</p>
+  </section>
+
+  <!-- 2 Problem -->
+  <section class="slide" aria-label="The problem">
+    <span class="kicker">The problem</span>
+    <h2>Agents need policy as logic. We have it as prose.</h2>
+    <p class="lede">Hundreds of pages written for people. Agents need explicit conditions, named inputs, units, steps and done-criteria, each traceable to its source.</p>
+    <div class="grid g4">
+      <div class="panel"><h3>Chunking loses meaning</h3><p class="muted">The obligation sits in a lead-in sentence; the items below it mean nothing alone.</p></div>
+      <div class="panel"><h3>Numbers drift</h3><p class="muted">One threshold can appear nine times in a section. Restated on every card, it will go out of sync.</p></div>
+      <div class="panel"><h3>Nothing stands alone</h3><p class="muted">A single section can cite twenty others. References look like gaps unless they are tracked.</p></div>
+      <div class="panel"><h3>Review doesn't scale</h3><p class="muted">400 unrelated cards means proofreading, not review, and no sense of what is covered.</p></div>
+    </div>
+  </section>
+
+  <!-- 3 Structure insight -->
+  <section class="slide" aria-label="Meaning lives in structure">
+    <span class="kicker">Key insight</span>
+    <h2>Meaning lives in structure</h2>
+    <div class="row">
+      <div class="panel grow">
+        <svg viewBox="0 0 640 300" width="100%" role="img" aria-label="A lead-in sentence carries the obligation; three list items inherit it">
+          <rect x="10" y="20" width="620" height="64" rx="12" fill="#EEF4FF" stroke="#1F5FD1"/>
+          <text x="30" y="48" font-size="17" fill="#14213D" font-weight="700">Lead-in · obligation</text>
+          <text x="30" y="72" font-size="16" fill="#44546F">"Payments for the following must be included in the ratio:"</text>
+          <g fill="#FFFFFF" stroke="#DDE3EC">
+            <rect x="90" y="120" width="300" height="44" rx="10"/><rect x="90" y="180" width="300" height="44" rx="10"/><rect x="90" y="240" width="300" height="44" rx="10"/>
+          </g>
+          <g font-size="16" fill="#14213D"><text x="110" y="148">Taxes</text><text x="110" y="208">Insurance</text><text x="110" y="268">Association dues</text></g>
+          <g stroke="#1F5FD1" stroke-width="2" fill="none"><path d="M50 84 V264 H90"/><path d="M50 142 H90"/><path d="M50 202 H90"/></g>
+          <g font-size="14" fill="#1B6B3A" font-weight="600"><text x="410" y="148">inherits: must include</text><text x="410" y="208">inherits: must include</text><text x="410" y="268">inherits: must include</text></g>
+        </svg>
+      </div>
+      <div class="panel grow">
+        <h3>Pass 0 builds a tree, not chunks</h3>
+        <ul class="clean">
+          <li>Every passage keeps its exact clause reference, e.g. <code>4.2(b)(i)</code>.</li>
+          <li>List items link to the sentence that introduces them; table cells to the sentence before the table.</li>
+          <li>Items without a modal verb <strong>inherit</strong> their parent's obligation, prohibition or permission.</li>
+          <li>It is deterministic. Only the final reading of modality ("may not use X and must instead use Y") goes to the model.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 Method -->
+  <section class="slide" aria-label="The method">
+    <span class="kicker">The method</span>
+    <h2>Five passes, with people reviewing where it is cheapest</h2>
+    <div class="panel">
+      <svg viewBox="0 0 1240 230" width="100%" role="img" aria-label="Pipeline: structure, map, cards, consolidate, validate; the map is the main human review gate">
+        <defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#5B6B84"/></marker></defs>
+        <g font-size="15">
+          <rect x="10" y="40" width="200" height="110" rx="14" fill="#F7F9FC" stroke="#C3CCDA"/>
+          <text x="30" y="72" font-weight="700" fill="#14213D">0 Structure</text><text x="30" y="98" fill="#44546F">passages, tree,</text><text x="30" y="120" fill="#44546F">modality</text>
+          <rect x="260" y="30" width="220" height="130" rx="14" fill="#EEF4FF" stroke="#1F5FD1" stroke-width="2.5"/>
+          <text x="280" y="62" font-weight="700" fill="#14213D">1 Map</text><text x="280" y="88" fill="#44546F">slots, parameters,</text><text x="280" y="110" fill="#44546F">inputs, coverage</text>
+          <rect x="530" y="40" width="200" height="110" rx="14" fill="#FFFFFF" stroke="#C3CCDA"/>
+          <text x="550" y="72" font-weight="700" fill="#14213D">2 Cards</text><text x="550" y="98" fill="#44546F">one per slot,</text><text x="550" y="120" fill="#44546F">evidence + tests</text>
+          <rect x="780" y="40" width="200" height="110" rx="14" fill="#FFFFFF" stroke="#C3CCDA" stroke-dasharray="6 5"/>
+          <text x="800" y="72" font-weight="700" fill="#14213D">3 Consolidate</text><text x="800" y="98" fill="#44546F">dedupe, relations</text><text x="800" y="120" fill="#5B6B84">(planned)</text>
+          <rect x="1030" y="40" width="200" height="110" rx="14" fill="#F7F9FC" stroke="#C3CCDA"/>
+          <text x="1050" y="72" font-weight="700" fill="#14213D">4 Validate</text><text x="1050" y="98" fill="#44546F">coverage, grounding,</text><text x="1050" y="120" fill="#44546F">verbatim, tests</text>
+        </g>
+        <g stroke="#5B6B84" stroke-width="2" marker-end="url(#ar)"><line x1="212" y1="95" x2="256" y2="95"/><line x1="482" y1="95" x2="526" y2="95"/><line x1="732" y1="95" x2="776" y2="95"/><line x1="982" y1="95" x2="1026" y2="95"/></g>
+        <g font-size="13" font-weight="700" letter-spacing="1">
+          <text x="30" y="186" fill="#5B6B84">DETERMINISTIC</text><text x="280" y="186" fill="#1F5FD1">MODEL + HUMAN GATE</text>
+          <text x="550" y="186" fill="#5B6B84">MODEL</text><text x="800" y="186" fill="#5B6B84">MODEL + GRAPH</text><text x="1050" y="186" fill="#5B6B84">DETERMINISTIC</text>
+        </g>
+      </svg>
+    </div>
+    <div class="grid g3">
+      <div class="panel tint"><h3>The map is the main gate</h3><p class="muted">Fixing one map entry is cheaper than fixing forty cards. Reviewers approve the plan before any card is written.</p></div>
+      <div class="panel"><h3>Cards fill slots</h3><p class="muted">Each card fills exactly one planned slot, so the set is cohesive by construction.</p></div>
+      <div class="panel"><h3>Checks are code</h3><p class="muted">Validation is deterministic and runs on every change; people only see failures.</p></div>
+    </div>
+  </section>
+
+  <!-- 5 Map -->
+  <section class="slide" aria-label="The policy map">
+    <span class="kicker">Pass 1</span>
+    <h2>The policy map: one plan for the whole document</h2>
+    <div class="row">
+      <div class="panel grow">
+        <table>
+          <tr><th>Part</th><th>Why it matters</th></tr>
+          <tr><td><strong>Slots</strong></td><td>Planned cards. Shared patterns become one card with parameters, not many near-copies</td></tr>
+          <tr><td><strong>Parameters</strong></td><td>Every stated number, once, checked against the source</td></tr>
+          <tr><td><strong>Inputs</strong></td><td>The only names conditions may use</td></tr>
+          <tr><td><strong>Glossary</strong></td><td>Defined terms and where they are defined</td></tr>
+          <tr><td><strong>Coverage</strong></td><td>Every obligation has a card or an explicit reason it does not</td></tr>
+          <tr><td><strong>Issues</strong></td><td>Policy defects, sent back to policy owners</td></tr>
+        </table>
+      </div>
+      <div class="panel grow">
+        <h3>A parameter in the registry</h3>
+<pre><span class="k">"DTI_MAX"</span>: {
+  <span class="k">"value"</span>: 0.45, <span class="k">"unit"</span>: <span class="s">"ratio"</span>,
+  <span class="k">"passages"</span>: [<span class="s">"p5"</span>, <span class="s">"p7"</span>]
+}</pre>
+        <p class="muted small" style="margin-top:12px">Cards say <span class="p">{{DTI_MAX}}</span>, never "45%". The validator checks that "45%" literally appears in p5 and p7. Change it once and every dependent card is re-checked.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 6 Card -->
+  <section class="slide" aria-label="The card contract">
+    <span class="kicker">Pass 2</span>
+    <h2>A card an agent can act on, and a person can check</h2>
+    <div class="row">
+      <div class="panel grow">
+        <div style="display:flex; gap:10px; align-items:center; margin-bottom:12px"><span class="chip rule">◆ Rule</span><strong>Maximum back-end DTI</strong></div>
+<pre><span class="k">when</span>  loan.dti_ratio &gt; <span class="p">{{DTI_MAX}}</span>
+<span class="k">then</span>  permitted only if
+      loan.dti_ratio &lt;= <span class="p">{{DTI_MAX_WITH_FACTORS}}</span>
+      and factors approved by a Senior Underwriter
+<span class="k">else</span>  within the limit
+
+<span class="k">tests</span> 0.45            → within_limit
+      0.48 + approved → permitted_with_factors
+      0.48            → exceeds_limit
+      0.52 + approved → exceeds_limit</pre>
+        <p class="small" style="margin-top:12px">Evidence: <mark>The maximum back-end debt-to-income (DTI) ratio is 45%.</mark></p>
+      </div>
+      <div class="panel grow">
+        <h3>The contract</h3>
+        <ol style="margin:0; padding-left:22px">
+          <li>Fills exactly one map slot, of the matching type</li>
+          <li>Evidence is a verbatim quote; offsets are computed</li>
+          <li>Numbers come from the registry as <code>{{PARAM}}</code></li>
+          <li>Conditions use only registered inputs</li>
+          <li>Executable cards carry logic and passing tests</li>
+          <li>Anything inferred is marked and backed by an issue</li>
+          <li>Procedure branches point to rule cards</li>
+        </ol>
+      </div>
+    </div>
+  </section>
+
+  <!-- 7 Validation -->
+  <section class="slide" aria-label="Validation">
+    <span class="kicker">Pass 4</span>
+    <h2>Validation catches what review would miss</h2>
+    <div class="row">
+      <div class="panel grow">
+        <table>
+          <tr><th>Code</th><th>Check</th></tr>
+          <tr><td><span class="tag">M1</span></td><td>Every obligation is in a slot or has a coverage reason</td></tr>
+          <tr><td><span class="tag">M3</span></td><td>Each parameter value appears in the passages it cites</td></tr>
+          <tr><td><span class="tag">C2</span></td><td>Evidence is verbatim</td></tr>
+          <tr><td><span class="tag">C5b</span></td><td>No hard-coded policy numbers in card text</td></tr>
+          <tr><td><span class="tag">C6</span></td><td>Inputs come from the vocabulary</td></tr>
+          <tr><td><span class="tag">C9</span></td><td>Executable cards pass their tests</td></tr>
+        </table>
+      </div>
+      <div class="panel grow">
+        <h3>Planted faults, all caught</h3>
+        <table>
+          <tr><td>Quote reworded</td><td><span class="tag bad">C2</span></td></tr>
+          <tr><td>Threshold changed 45% → 40%</td><td><span class="tag bad">M3</span> <span class="tag bad">C9</span></td></tr>
+          <tr><td>Obligation dropped from the map</td><td><span class="tag bad">M1</span></td></tr>
+          <tr><td>"45%" typed into a card</td><td><span class="tag bad">C5b</span></td></tr>
+          <tr><td>Unknown input used</td><td><span class="tag bad">C6</span></td></tr>
+        </table>
+        <p class="muted small" style="margin-top:12px">A wrong number is caught twice: against the source text, and through the tests of every card that uses it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 8 Findings -->
+  <section class="slide" aria-label="What the pilot showed">
+    <span class="kicker">Pilot</span>
+    <h2>What decomposing a real guide section showed</h2>
+    <p class="lede">The method was piloted on a dense section of a public mortgage-industry guide: 141 passages, 38 planned cards.</p>
+    <div class="grid g3">
+      <div class="panel"><h3>Structure carries obligations</h3><p class="muted">Most list items had no modal verb of their own; they inherited it.</p></div>
+      <div class="panel"><h3>Numbers repeat</h3><p class="muted">One cut-off appeared nine times, another seven. One registry entry each.</p></div>
+      <div class="panel"><h3>Patterns collapse</h3><p class="muted">Three fallback calculations differed only by a factor: one shared card.</p></div>
+      <div class="panel"><h3>References everywhere</h3><p class="muted">One section cited about twenty others, tracked as external coverage.</p></div>
+      <div class="panel"><h3>Policies have defects</h3><p class="muted">Missing thresholds, an example mistaken for a rule, alternatives with no order.</p></div>
+      <div class="panel"><h3>Versions overlap</h3><p class="muted">Current and future versions live at once; fingerprints flag only what changed.</p></div>
+    </div>
+  </section>
+
+  <!-- 9 Architecture -->
+  <section class="slide" aria-label="Architecture">
+    <span class="kicker">Implementation</span>
+    <h2>Architecture</h2>
+    <div class="panel">
+      <svg viewBox="0 0 1240 380" width="100%" role="img" aria-label="Review UI with screens, store, domain and an adapter seam; the decomposition method sits behind the decomposition adapter">
+        <rect x="10" y="10" width="1220" height="250" rx="16" fill="#FFFFFF" stroke="#DDE3EC"/>
+        <text x="34" y="44" font-size="16" font-weight="700" fill="#14213D">Review UI · Vite · React 19 · TypeScript · Salt design system</text>
+        <g font-size="15">
+          <rect x="34" y="64" width="270" height="58" rx="10" fill="#EEF4FF" stroke="#1F5FD1"/><text x="52" y="90" fill="#14213D">Screens: Load, Decompose,</text><text x="52" y="110" fill="#44546F">Review, Publish</text>
+          <rect x="324" y="64" width="270" height="58" rx="10" fill="#F7F9FC" stroke="#C3CCDA"/><text x="342" y="90" fill="#14213D">Store: one pure reducer,</text><text x="342" y="110" fill="#44546F">selectors, local drafts</text>
+          <rect x="614" y="64" width="300" height="58" rx="10" fill="#F7F9FC" stroke="#C3CCDA"/><text x="632" y="90" fill="#14213D">Domain: IDs, evidence, validation,</text><text x="632" y="110" fill="#44546F">artifact + SHA-256 content hash</text>
+          <rect x="934" y="64" width="272" height="58" rx="10" fill="#F7F9FC" stroke="#C3CCDA"/><text x="952" y="90" fill="#14213D">JSON Schema 2020-12</text><text x="952" y="110" fill="#44546F">artifacts + package manifest</text>
+        </g>
+        <text x="34" y="160" font-size="13" font-weight="700" letter-spacing="1" fill="#5B6B84">ADAPTER SEAM · THE ONLY I/O</text>
+        <g font-size="15">
+          <rect x="34" y="174" width="370" height="64" rx="10" fill="#FFFFFF" stroke="#1F5FD1"/><text x="52" y="202" font-weight="700" fill="#14213D">IngestAdapter</text><text x="52" y="224" fill="#44546F">any source format → passages</text>
+          <rect x="434" y="174" width="370" height="64" rx="10" fill="#FFFFFF" stroke="#1F5FD1"/><text x="452" y="202" font-weight="700" fill="#14213D">DecompositionAdapter</text><text x="452" y="224" fill="#44546F">passes 1–2 → cards, issues (with stage events)</text>
+          <rect x="834" y="174" width="372" height="64" rx="10" fill="#FFFFFF" stroke="#1F5FD1"/><text x="852" y="202" font-weight="700" fill="#14213D">PublishAdapter</text><text x="852" y="224" fill="#44546F">validate, hash, publish or export JSON</text>
+        </g>
+        <path d="M619 290 V242" stroke="#5B6B84" stroke-width="2" marker-end="url(#ar2)"/>
+        <defs><marker id="ar2" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto"><path d="M0 0 L10 5 L0 10z" fill="#5B6B84"/></marker></defs>
+        <rect x="320" y="294" width="600" height="72" rx="14" fill="#E4F5EA" stroke="#A9DDBB"/>
+        <text x="342" y="324" font-size="15" font-weight="700" fill="#14213D">Decomposition method · Node</text>
+        <text x="342" y="348" font-size="15" fill="#44546F">golden/&lt;example&gt;/ passages · map · cards  +  pipeline/validate.mjs</text>
+      </svg>
+    </div>
+    <p class="muted">Today the adapters are deterministic mocks, so every screen and test runs without a backend. A real decomposition service plugs in by returning a <code>DecompositionResult</code>.</p>
+  </section>
+
+  <!-- 10 Load + Decompose -->
+  <section class="slide" aria-label="Load and decompose">
+    <span class="kicker">Workflow · steps 1 and 2</span>
+    <h2>Load the policy, run the decomposition</h2>
+    <div class="row">
+      <div class="shot-frame"><img class="shot" src="screens/phase5-load.png" alt="Load screen with detected structure, card-type tiles, granularity and checks" /></div>
+      <div class="shot-frame"><img class="shot" src="screens/phase4-decompose-complete.png" alt="Decompose screen with stat tiles, pipeline stages, coverage by section and issues found" /></div>
+    </div>
+    <div class="grid g2">
+      <p class="muted">Detected structure, validated policy metadata stamped on every card, card types, granularity and checks.</p>
+      <p class="muted">Live pipeline stages, coverage by section ("4.2 has no card"), and every issue linking to the card that needs it.</p>
+    </div>
+  </section>
+
+  <!-- 11 Review -->
+  <section class="slide" aria-label="Review">
+    <span class="kicker">Workflow · step 3</span>
+    <h2>Review every card with its lineage</h2>
+    <div class="row">
+      <div class="shot-frame"><img class="shot" src="screens/phase3-review-blocked.png" alt="Review screen: card list, source passages with highlighted evidence, card detail with a blocking issue" /></div>
+      <div class="panel" style="flex:1">
+        <ul class="clean">
+          <li><strong>Source pane</strong> highlights the exact evidence for the selected card.</li>
+          <li><strong>Issues</strong> sit on the card; a blocking issue disables Approve and says why.</li>
+          <li><strong>Lineage tab</strong>: document → section → passage → card, with quotes and relations.</li>
+          <li><strong>Artifact tab</strong>: the JSON exactly as it will publish.</li>
+          <li>Reopening a resolved blocker returns approved cards to pending.</li>
+          <li>Keyboard first: arrow keys through cards, focus follows decisions.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- 12 Publish -->
+  <section class="slide" aria-label="Publish">
+    <span class="kicker">Workflow · step 4</span>
+    <h2>Publish immutable, traceable artifacts</h2>
+    <div class="row">
+      <div class="shot-frame"><img class="shot" src="screens/phase6-publish.png" alt="Publish screen with artifacts table and sign-off checks" /></div>
+      <div class="panel" style="flex:1">
+        <h3>Each artifact carries</h3>
+<pre>schema · card_id · uri · type · title
+policy · applicability
+source   ← verbatim quotes + offsets
+content  ← typed fields
+relations · retrieval tags
+quality · review
+content_hash = sha256(RFC 8785 JSON)</pre>
+        <p class="muted small" style="margin-top:12px">Meaning changes the hash; review status does not. Every artifact is schema-validated before it leaves.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- 13 Quality -->
+  <section class="slide" aria-label="Quality">
+    <span class="kicker">Quality</span>
+    <h2>Verified, not assumed</h2>
+    <div class="grid g4">
+      <div class="panel"><div class="stat">52</div><p class="muted">unit and component tests: IDs, hashing, reducer rules, persistence</p></div>
+      <div class="panel"><div class="stat">78</div><p class="muted">end-to-end tests on dev and production builds</p></div>
+      <div class="panel"><div class="stat">0</div><p class="muted">serious or critical accessibility violations on any screen or state</p></div>
+      <div class="panel"><div class="stat">2</div><p class="muted">viewports with visual baselines and layout guardrails (1440 and 390)</p></div>
+    </div>
+    <div class="panel">
+      <p><code>npm run verify</code> runs strict TypeScript, lint (accessibility and a rule that keeps all text in one copy catalog), design-token checks, unit tests, and Playwright: the full happy path with a schema-validated export, a keyboard-only run, reload restore, and axe scans.</p>
+    </div>
+  </section>
+
+  <!-- 14 Roadmap -->
+  <section class="slide" aria-label="Roadmap">
+    <span class="kicker">Next</span>
+    <h2>Roadmap</h2>
+    <div class="grid g3">
+      <div class="panel tint"><h3>1 · Decomposition service</h3><p class="muted">A model-driven pass 1 and 2 behind the adapter, scored against reference sets with the validator.</p></div>
+      <div class="panel"><h3>2 · Map review step</h3><p class="muted">Approve slots, parameters and coverage in the UI before cards are generated.</p></div>
+      <div class="panel"><h3>3 · Agent fields in review</h3><p class="muted">Show parameters, inputs, logic and test results on each card.</p></div>
+      <div class="panel"><h3>4 · Stable IDs across versions</h3><p class="muted">Slots and fingerprints: re-review only what changed.</p></div>
+      <div class="panel"><h3>5 · Edits and audit trail</h3><p class="muted">Field-level edits, who decided what and why.</p></div>
+      <div class="panel"><h3>6 · Multi-document packages</h3><p class="muted">Resolve references across documents; a real publish target.</p></div>
+    </div>
+  </section>
+
+  <!-- 15 Close -->
+  <section class="slide" aria-label="Summary">
+    <div style="flex:1; display:flex; flex-direction:column; justify-content:center; gap:24px; max-width:1100px">
+      <span class="kicker">Summary</span>
+      <h1>Plan the whole document, then write the cards</h1>
+      <ul class="clean lede">
+        <li>Structure first, so obligations are never lost.</li>
+        <li>A reviewed map, so the set is cohesive and every number lives once.</li>
+        <li>A strict card contract and deterministic checks, so cards are controlled.</li>
+        <li>A review application with lineage on every screen, so people can trust what they approve.</li>
+      </ul>
+      <p class="muted">Spec: <code>docs/SPEC.md</code> · Code: github.com/Chunkys0up7/decomp</p>
+    </div>
+  </section>
+
+</main>
+
+<nav class="nav" aria-label="Slides">
+  <button type="button" id="prev" aria-label="Previous slide">←</button>
+  <span id="count" aria-live="polite">1 / 15</span>
+  <div class="bar" aria-hidden="true"><span id="progress"></span></div>
+  <button type="button" id="next" aria-label="Next slide">→</button>
+</nav>
+
+<script>
+  const slides = [...document.querySelectorAll(".slide")];
+  const count = document.getElementById("count");
+  const progress = document.getElementById("progress");
+  let i = 0;
+  const fromHash = () => { const n = parseInt(location.hash.slice(1), 10); return Number.isFinite(n) ? Math.min(Math.max(n - 1, 0), slides.length - 1) : 0; };
+  function show(n) {
+    i = Math.min(Math.max(n, 0), slides.length - 1);
+    slides.forEach((s, k) => s.classList.toggle("active", k === i));
+    count.textContent = `${i + 1} / ${slides.length}`;
+    progress.style.width = `${((i + 1) / slides.length) * 100}%`;
+    if (location.hash !== `#${i + 1}`) history.replaceState(null, "", `#${i + 1}`);
+  }
+  document.getElementById("prev").addEventListener("click", () => show(i - 1));
+  document.getElementById("next").addEventListener("click", () => show(i + 1));
+  document.addEventListener("keydown", (e) => {
+    if (["ArrowRight", "PageDown", " "].includes(e.key)) { e.preventDefault(); show(i + 1); }
+    if (["ArrowLeft", "PageUp"].includes(e.key)) { e.preventDefault(); show(i - 1); }
+    if (e.key === "Home") show(0);
+    if (e.key === "End") show(slides.length - 1);
+  });
+  window.addEventListener("hashchange", () => show(fromHash()));
+  show(fromHash());
+</script>
+</body>
+</html>
