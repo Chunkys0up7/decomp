@@ -4,3 +4,6 @@ out/
 dist/
 test-results/
 playwright-report/
+
+# Local-only working data (third-party source text, POC runs). Never committed.
+local/
