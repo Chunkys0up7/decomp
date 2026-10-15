@@ -1,0 +1,435 @@
+<title>Policy Cards on OpenProse</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&family=PT+Mono&display=swap">
+<style>
+/* Layout: one reading column with full-width figures; the run walkthrough is the centrepiece. */
+:root {
+  --bg: #F3F5F8; --surface: #FFFFFF; --sunken: #F7F9FC; --tint: #EEF4FF;
+  --line: #DDE3EC; --line-strong: #C3CCDA;
+  --ink: #14213D; --ink-2: #44546F; --ink-3: #5B6B84;
+  --accent: #1F5FD1; --accent-tint: #E8F0FD;
+  --ok: #1B6B3A; --ok-tint: #E4F5EA; --skip: #5B6B84; --skip-tint: #EEF1F5;
+  --err: #B42318; --err-tint: #FDECEA; --warn: #8A5A00; --warn-tint: #FFF4D6;
+  --param: #8A2BA0; --param-tint: #F6E8FA; --mark: #FFE9A8;
+  --display: "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --body: "Open Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "PT Mono", ui-monospace, Consolas, monospace;
+  --shadow: 0 1px 2px rgba(20,33,61,.06), 0 4px 16px rgba(20,33,61,.06);
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0E1626; --surface: #152036; --sunken: #111B2E; --tint: #1A2B4D;
+    --line: #26344F; --line-strong: #33456A;
+    --ink: #E6ECF6; --ink-2: #B5C1D6; --ink-3: #8C9BB5;
+    --accent: #7FA8F5; --accent-tint: #1C2E52;
+    --ok: #7FD3A0; --ok-tint: #143224; --skip: #9AA8BF; --skip-tint: #1A2438;
+    --err: #F29B91; --err-tint: #3A1A18; --warn: #F2C66B; --warn-tint: #3A2E12;
+    --param: #DCA2EA; --param-tint: #33193C; --mark: #5A4A14;
+    --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0E1626; --surface: #152036; --sunken: #111B2E; --tint: #1A2B4D;
+  --line: #26344F; --line-strong: #33456A;
+  --ink: #E6ECF6; --ink-2: #B5C1D6; --ink-3: #8C9BB5;
+  --accent: #7FA8F5; --accent-tint: #1C2E52;
+  --ok: #7FD3A0; --ok-tint: #143224; --skip: #9AA8BF; --skip-tint: #1A2438;
+  --err: #F29B91; --err-tint: #3A1A18; --warn: #F2C66B; --warn-tint: #3A2E12;
+  --param: #DCA2EA; --param-tint: #33193C; --mark: #5A4A14;
+  --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 16px rgba(0,0,0,.25);
+  color-scheme: dark;
+}
+* { box-sizing: border-box; }
+body { background: var(--bg); color: var(--ink); font: 400 16.5px/1.65 var(--body); }
+.wrap { max-width: 1080px; margin: 0 auto; padding-block: 48px 80px; padding-inline: 20px; display: flex; flex-direction: column; gap: 72px; }
+h1, h2, h3 { font-family: var(--display); text-wrap: balance; margin: 0; letter-spacing: -0.01em; }
+h1 { font-size: clamp(32px, 5vw, 50px); line-height: 1.08; font-weight: 800; }
+h2 { font-size: clamp(24px, 3.2vw, 32px); line-height: 1.2; font-weight: 700; }
+h3 { font-size: 18px; font-weight: 700; }
+p { margin: 0; }
+.prose { max-width: 66ch; display: flex; flex-direction: column; gap: 14px; color: var(--ink-2); }
+.eyebrow { font: 700 12.5px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--accent); }
+section { display: flex; flex-direction: column; gap: 22px; }
+code, .mono { font-family: var(--mono); font-size: .92em; }
+.lede { font-size: 20px; color: var(--ink-2); max-width: 62ch; }
+.hero { display: flex; flex-direction: column; gap: 20px; }
+.thesis { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; margin-top: 8px; }
+.thesis div { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; box-shadow: var(--shadow); }
+.thesis b { display: block; font-size: 26px; font-weight: 800; color: var(--ink); line-height: 1.15; font-variant-numeric: tabular-nums; }
+.thesis span { font-size: 14px; color: var(--ink-2); }
+.figure { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); padding: 24px; overflow-x: auto; }
+.figure svg { display: block; width: 100%; min-width: 720px; height: auto; }
+.cap { font-size: 14px; color: var(--ink-3); max-width: 70ch; }
+svg text { font-family: var(--body); fill: var(--ink); }
+svg .muted { fill: var(--ink-2); }
+svg .faint { fill: var(--ink-3); }
+svg .lane { fill: var(--sunken); stroke: var(--line); }
+svg .box { fill: var(--surface); stroke: var(--line-strong); }
+svg .box-acc { fill: var(--tint); stroke: var(--accent); stroke-width: 2; }
+svg .box-ok { fill: var(--ok-tint); stroke: var(--ok); }
+svg .edge { stroke: var(--ink-3); stroke-width: 1.6; fill: none; }
+svg .edge-acc { stroke: var(--accent); stroke-width: 2; fill: none; }
+svg .lbl { font-size: 12px; fill: var(--accent); font-family: var(--mono); }
+svg .arrowhead { fill: var(--ink-3); } svg .arrowhead-acc { fill: var(--accent); }
+
+/* split ownership */
+.owners { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.owner { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.owner.op { border-top: 4px solid var(--accent); }
+.owner.pc { border-top: 4px solid var(--ok); }
+.owner ul { margin: 0; padding-left: 18px; color: var(--ink-2); }
+.owner li { margin: 4px 0; }
+
+/* walkthrough */
+.runs { background: var(--surface); border: 1px solid var(--line); border-radius: 16px; box-shadow: var(--shadow); overflow: hidden; }
+.tabs { display: flex; flex-wrap: wrap; gap: 4px; padding: 10px; background: var(--sunken); border-bottom: 1px solid var(--line); }
+.tabs button { font: 600 14px/1.2 var(--body); color: var(--ink-2); background: transparent; border: 1px solid transparent; border-radius: 10px; padding: 9px 14px; cursor: pointer; text-align: left; }
+.tabs button small { display: block; font-weight: 400; font-size: 12px; color: var(--ink-3); margin-top: 2px; }
+.tabs button[aria-selected="true"] { background: var(--surface); border-color: var(--line); color: var(--ink); box-shadow: var(--shadow); }
+.tabs button:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+.panel { padding: 22px 24px 26px; display: flex; flex-direction: column; gap: 18px; }
+.trigger { font-size: 15px; color: var(--ink-2); }
+.trigger strong { color: var(--ink); }
+.chain { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 10px; }
+.node { border-radius: 12px; padding: 12px 12px 14px; border: 1px solid var(--line); background: var(--sunken); display: flex; flex-direction: column; gap: 6px; min-width: 0; }
+.node .name { font: 13px/1.3 var(--mono); color: var(--ink); overflow-wrap: anywhere; }
+.node .state { align-self: flex-start; font: 700 11.5px/1 var(--body); letter-spacing: .08em; text-transform: uppercase; padding: 4px 8px; border-radius: 999px; }
+.node .what { font-size: 13px; color: var(--ink-2); line-height: 1.45; }
+.node[data-s="rendered"] { background: var(--ok-tint); border-color: var(--ok); } .node[data-s="rendered"] .state { background: var(--ok); color: var(--surface); }
+.node[data-s="skipped"] { background: var(--skip-tint); } .node[data-s="skipped"] .state { background: var(--skip); color: var(--surface); }
+.node[data-s="idle"] { opacity: .62; } .node[data-s="idle"] .state { background: var(--line); color: var(--ink-2); }
+.node[data-s="pending"] { background: var(--warn-tint); border-color: var(--warn); } .node[data-s="pending"] .state { background: var(--warn); color: var(--surface); }
+.node[data-s="failed"] { background: var(--err-tint); border-color: var(--err); } .node[data-s="failed"] .state { background: var(--err); color: var(--surface); }
+.outcome { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 16px; }
+.box2 { border: 1px solid var(--line); border-radius: 12px; padding: 14px 16px; background: var(--surface); display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.box2 h3 { font-size: 14px; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); }
+.queue { display: flex; flex-direction: column; gap: 6px; margin: 0; padding: 0; list-style: none; }
+.queue li { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; font-size: 14.5px; }
+.pill { font: 700 11.5px/1 var(--body); padding: 4px 9px; border-radius: 999px; white-space: nowrap; }
+.pill.new { background: var(--ok-tint); color: var(--ok); } .pill.changed { background: var(--warn-tint); color: var(--warn); }
+.pill.parameter-changed { background: var(--param-tint); color: var(--param); } .pill.none { background: var(--skip-tint); color: var(--skip); }
+.diff { font-size: 15px; color: var(--ink-2); }
+del { background: var(--err-tint); color: var(--err); text-decoration: line-through; padding: 0 2px; border-radius: 3px; }
+ins { background: var(--ok-tint); color: var(--ok); text-decoration: none; font-weight: 700; padding: 0 2px; border-radius: 3px; }
+mark { background: var(--mark); color: var(--ink); padding: 0 3px; border-radius: 3px; }
+
+/* glossary */
+.terms { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0; border: 1px solid var(--line); border-radius: 14px; overflow: hidden; background: var(--surface); }
+.term { padding: 16px 20px; border-bottom: 1px solid var(--line); display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; min-width: 0; }
+.term:nth-child(odd) { border-right: 1px solid var(--line); }
+.term dt { font: 700 14px/1.4 var(--mono); color: var(--accent); margin: 0; }
+.term dd { margin: 0; font-size: 15px; color: var(--ink-2); }
+.term dd b { color: var(--ink); font-weight: 600; }
+
+/* who benefits */
+.roles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.role { background: var(--surface); border: 1px solid var(--line); border-radius: 14px; padding: 20px 22px; display: flex; flex-direction: column; gap: 10px; min-width: 0; }
+.role .before, .role .after { font-size: 15px; display: grid; grid-template-columns: 64px minmax(0, 1fr); gap: 10px; }
+.role .before span:first-child, .role .after span:first-child { font: 700 11.5px/1.9 var(--body); letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); }
+.role .after span:first-child { color: var(--ok); }
+.role .before span:last-child { color: var(--ink-2); }
+
+/* findings */
+.find { display: flex; flex-direction: column; gap: 12px; margin: 0; padding: 0; list-style: none; }
+.find li { background: var(--surface); border: 1px solid var(--line); border-left: 4px solid var(--line-strong); border-radius: 10px; padding: 14px 18px; color: var(--ink-2); }
+.find li.fix { border-left-color: var(--param); }
+.find li.caveat { border-left-color: var(--warn); }
+.find li b { color: var(--ink); }
+
+/* try it */
+.cmd { display: flex; align-items: stretch; gap: 0; background: var(--sunken); border: 1px solid var(--line); border-radius: 12px; overflow: hidden; }
+.cmd pre { margin: 0; flex: 1; padding: 14px 16px; font: 14px/1.5 var(--mono); overflow-x: auto; color: var(--ink); min-width: 0; }
+.cmd button { font: 600 13px var(--body); border: 0; border-left: 1px solid var(--line); background: var(--surface); color: var(--accent); padding: 0 16px; cursor: pointer; }
+.cmd button:focus-visible { outline: 3px solid var(--accent); outline-offset: -3px; }
+.steps { display: flex; flex-direction: column; gap: 14px; }
+
+@media (max-width: 760px) {
+  .thesis, .owners, .roles, .outcome { grid-template-columns: minmax(0, 1fr); }
+  .chain { grid-template-columns: minmax(0, 1fr); }
+  .terms { grid-template-columns: minmax(0, 1fr); }
+  .term { grid-template-columns: minmax(0, 1fr); gap: 4px; }
+  .term:nth-child(odd) { border-right: 0; }
+  .wrap { gap: 56px; padding-block: 32px 64px; }
+}
+@media (prefers-reduced-motion: no-preference) {
+  .node { transition: background-color .2s, border-color .2s, opacity .2s; }
+}
+</style>
+
+<div class="wrap">
+
+  <header class="hero">
+    <span class="eyebrow">Policy Cards · OpenProse spike</span>
+    <h1>When a policy changes, redo only what moved</h1>
+    <p class="lede">Policy Cards turns long procedural documents into reviewed, agent-ready cards. OpenProse is the runtime model that keeps that card set current: every step declares what it needs and what it maintains, a step re-runs only when something it watches changes, and every run leaves a receipt.</p>
+    <div class="thesis">
+      <div><b>2 of 5</b><span>cards rewritten when the demo policy's DTI limit moved from 45% to 43%</span></div>
+      <div><b>0 work</b><span>when the same version is sent again: one skipped receipt, nothing else runs</span></div>
+      <div><b>1 of 13</b><span>cards rewritten on a real public guide section's next version, with 139 of 142 passages recognised as unchanged</span></div>
+    </div>
+  </header>
+
+  <section aria-labelledby="h-problem">
+    <span class="eyebrow">The problem it solves</span>
+    <h2 id="h-problem">Decomposition is not a one-off job</h2>
+    <div class="prose">
+      <p>Policies are reissued. Thresholds move, definitions are reworded, notices come and go. If every new version means re-running the whole decomposition, reviewers re-approve hundreds of cards they already checked, and nobody can say afterwards why a card changed.</p>
+      <p>What people need is narrower: tell me which cards this version actually affects, why, and keep a record. That is a runtime problem, and it is the problem OpenProse's responsibility runtime was designed for.</p>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-fit">
+    <span class="eyebrow">Where it fits</span>
+    <h2 id="h-fit">OpenProse runs the pipeline; Policy Cards defines what good looks like</h2>
+    <div class="figure" role="img" aria-label="Source documents feed an OpenProse program of five steps. The program uses the Policy Cards validator to gate commits and feeds the review application, which publishes artifacts to agents.">
+      <svg viewBox="0 0 1000 330">
+        <defs>
+          <marker id="a" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead" d="M0 0L10 5L0 10z"/></marker>
+          <marker id="aa" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="arrowhead-acc" d="M0 0L10 5L0 10z"/></marker>
+        </defs>
+        <rect class="box" x="10" y="120" width="140" height="80" rx="12"/>
+        <text x="80" y="153" text-anchor="middle" font-weight="700" font-size="15">Policy</text>
+        <text x="80" y="174" text-anchor="middle" class="muted" font-size="13">versions over time</text>
+
+        <rect class="lane" x="190" y="20" width="440" height="290" rx="16"/>
+        <text x="210" y="48" font-weight="700" font-size="14" style="fill: var(--accent)">OPENPROSE PROGRAM</text>
+        <text x="210" y="68" class="faint" font-size="12.5">contracts in Markdown · runs only what moved · receipts for every step</text>
+        <g font-size="13.5">
+          <rect class="box" x="210" y="88" width="190" height="44" rx="10"/><text x="226" y="115">gateway: new version</text>
+          <rect class="box" x="210" y="146" width="190" height="44" rx="10"/><text x="226" y="173">structure → passages</text>
+          <rect class="box-acc" x="420" y="146" width="190" height="44" rx="10"/><text x="436" y="173">map → plan, numbers</text>
+          <rect class="box" x="420" y="204" width="190" height="44" rx="10"/><text x="436" y="231">cards → card set</text>
+          <rect class="box" x="210" y="204" width="190" height="44" rx="10"/><text x="226" y="231">review queue</text>
+        </g>
+        <path class="edge" d="M305 132 V146" marker-end="url(#a)"/>
+        <path class="edge" d="M400 168 H420" marker-end="url(#a)"/>
+        <path class="edge" d="M515 190 V204" marker-end="url(#a)"/>
+        <path class="edge" d="M420 226 H400" marker-end="url(#a)"/>
+        <path class="edge" d="M150 160 H190" marker-end="url(#a)"/>
+
+        <rect class="box-ok" x="680" y="40" width="300" height="70" rx="12"/>
+        <text x="700" y="68" font-weight="700" font-size="14.5">Policy Cards validator</text>
+        <text x="700" y="90" class="muted" font-size="13">card contract checks gate every commit</text>
+        <path class="edge-acc" d="M610 226 C650 226 650 90 680 90" marker-end="url(#aa)"/>
+        <text x="640" y="150" class="lbl">commit only if valid</text>
+
+        <rect class="box-ok" x="680" y="140" width="300" height="70" rx="12"/>
+        <text x="700" y="168" font-weight="700" font-size="14.5">Review application</text>
+        <text x="700" y="190" class="muted" font-size="13">people approve the queued cards</text>
+        <path class="edge" d="M210 248 C120 300 640 300 700 210" marker-end="url(#a)"/>
+
+        <rect class="box-ok" x="680" y="240" width="300" height="70" rx="12"/>
+        <text x="700" y="268" font-weight="700" font-size="14.5">Published artifacts → agents</text>
+        <text x="700" y="290" class="muted" font-size="13">stable IDs, content hash, lineage</text>
+        <path class="edge" d="M830 210 V240" marker-end="url(#a)"/>
+      </svg>
+    </div>
+    <div class="owners">
+      <div class="owner op">
+        <h3>OpenProse owns how the work runs</h3>
+        <ul>
+          <li>Steps written as contracts: what each needs, what it keeps true</li>
+          <li>Deciding what changed by comparing fingerprints, never by asking a model</li>
+          <li>Skipping steps whose inputs did not move</li>
+          <li>Receipts: an append-only record of every step in every run</li>
+        </ul>
+      </div>
+      <div class="owner pc">
+        <h3>Policy Cards owns what a good result is</h3>
+        <ul>
+          <li>The card contract and four card types</li>
+          <li>The validator that blocks any card that breaks the contract</li>
+          <li>The review application and approval rules</li>
+          <li>The published artifact format agents consume</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-walk">
+    <span class="eyebrow">Walkthrough</span>
+    <h2 id="h-walk">Four runs on the demo policy</h2>
+    <p class="cap">Real results from <code>npm run spike:openprose</code> on the fictional sample policy POL-HL-0142. Pick a run to see which steps worked and what reached reviewers.</p>
+    <div class="runs">
+      <div class="tabs" role="tablist" aria-label="Runs" id="tabs"></div>
+      <div class="panel" role="tabpanel" id="panel" aria-live="polite"></div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-terms">
+    <span class="eyebrow">Vocabulary</span>
+    <h2 id="h-terms">OpenProse terms, in Policy Cards language</h2>
+    <dl class="terms">
+      <div class="term"><dt>responsibility</dt><dd>A standing step that <b>keeps something true</b>: the passages, the policy map, the card set, the review queue.</dd></div>
+      <div class="term"><dt>gateway</dt><dd>How a <b>new policy version</b> enters. Re-sending the same version does nothing.</dd></div>
+      <div class="term"><dt>facet</dt><dd>A named part of what a step maintains, such as <b>parameters</b> or <b>slots</b>. Other steps subscribe to facets, not to everything.</dd></div>
+      <div class="term"><dt>fingerprint</dt><dd>A hash of a facet's meaningful content. <b>Same hash, nothing changed</b>; the same idea as a card's content hash.</dd></div>
+      <div class="term"><dt>memo key</dt><dd>The step's own contract plus the fingerprints it watches. <b>Unchanged key, skip the step.</b></dd></div>
+      <div class="term"><dt>render</dt><dd>One run of a step. For the map and cards this is <b>model work</b>; for structure and the queue it is plain code.</dd></div>
+      <div class="term"><dt>postcondition</dt><dd>What must hold before a result is saved. Here it is <b>our validator</b>, so a bad card is never committed.</dd></div>
+      <div class="term"><dt>receipt</dt><dd>The record of one step in one run: what woke it, what it saw, what moved, what was reused. <b>The audit trail.</b></dd></div>
+    </dl>
+  </section>
+
+  <section aria-labelledby="h-roles">
+    <span class="eyebrow">Why it makes this more usable</span>
+    <h2 id="h-roles">What changes for each person</h2>
+    <div class="roles">
+      <div class="role">
+        <h3>Policy reviewer</h3>
+        <p class="before"><span>Before</span><span>Every new version reopens the whole card set.</span></p>
+        <p class="after"><span>After</span><span>A queue of only the affected cards, each with a reason: changed, parameter changed, or a card it depends on moved.</span></p>
+      </div>
+      <div class="role">
+        <h3>Policy owner</h3>
+        <p class="before"><span>Before</span><span>Ambiguities found during decomposition get lost between versions.</span></p>
+        <p class="after"><span>After</span><span>Each version's map carries its issues forward, and new wording raises new ones (for example "and/or" in a ratio's denominator).</span></p>
+      </div>
+      <div class="role">
+        <h3>Risk and audit</h3>
+        <p class="before"><span>Before</span><span>Hard to show why a card changed or who checked what.</span></p>
+        <p class="after"><span>After</span><span>A receipt per step per run: the inputs seen, what moved, what was reused, and every rejected render with the reason.</span></p>
+      </div>
+      <div class="role">
+        <h3>Platform and cost</h3>
+        <p class="before"><span>Before</span><span>Model work scales with document size on every run.</span></p>
+        <p class="after"><span>After</span><span>Model work scales with what changed. Unchanged versions cost nothing; a one-clause change rewrites one or two cards.</span></p>
+      </div>
+    </div>
+  </section>
+
+  <section aria-labelledby="h-found">
+    <span class="eyebrow">What the spike taught us</span>
+    <h2 id="h-found">Findings</h2>
+    <ul class="find">
+      <li><b>Stable passage keys are the real work.</b> Removing one notice at the top of a real section renumbered 140 passages. Keys carried by matching clause and text kept 139 of 142 stable, so only true changes were flagged.</li>
+      <li><b>Skipping happens at two levels.</b> OpenProse decides per step; inside the cards step a per-card check (the slot, the passages it cites, the parameter values it uses) turns "the cards step ran" into "one card was rewritten".</li>
+      <li class="fix"><b>A threshold change can leave a card's text identical.</b> Cards say <code>{{DTI_MAX}}</code>, not "45%". The fix: each card carries the values of the parameters it uses, so the change moves the card's fingerprint and reviewers see it as "parameter changed".</li>
+      <li class="fix"><b>Watching two sources can mix versions.</b> When the queue watched both cards and parameters, a failed card update still woke it with half-new data. Watching only the cards closed that gap.</li>
+      <li><b>The validator has to be code.</b> Contract conditions are written in prose; our validator is what actually stopped a card with a reworded quote.</li>
+      <li class="caveat"><b>Adopt the model, not the dependency yet.</b> The language is young (its last major update changed the vocabulary without a data migration), the reference runtime is alpha, and the default model gateway would need review before regulated text goes through it.</li>
+    </ul>
+  </section>
+
+  <section aria-labelledby="h-try">
+    <span class="eyebrow">Try it</span>
+    <h2 id="h-try">Run it yourself</h2>
+    <div class="steps">
+      <div class="prose"><p>From the repository, on the <code>spike/openprose</code> branch:</p></div>
+      <div class="cmd"><pre id="c1">npm run spike:openprose</pre><button type="button" data-copy="c1">Copy</button></div>
+      <div class="prose">
+        <p>It resets its own state, runs the four runs above and writes <code>spikes/openprose/demo/report.html</code>. The contracts are in <code>spikes/openprose/src/policy-cards/</code>; receipts land in <code>local/demo-root/state/world-model/&lt;step&gt;/receipts.jsonl</code>.</p>
+        <p>To see OpenProse's own tooling, install its skill into Claude Code and ask the session to compile our contracts:</p>
+      </div>
+      <div class="cmd"><pre id="c2">npx skills add openprose/prose</pre><button type="button" data-copy="c2">Copy</button></div>
+      <div class="cmd"><pre id="c3">prose compile spikes/openprose/src/policy-cards</pre><button type="button" data-copy="c3">Copy</button></div>
+      <p class="cap">The second command is typed into a Claude Code session, not a shell: OpenProse has no binary, the agent session acts as its runtime.</p>
+    </div>
+  </section>
+
+</div>
+
+<script>
+const NODES = ["policy-source-events", "policy-structure", "policy-map", "policy-cards", "review-queue"];
+const RUNS = [
+  {
+    tab: "1 · Load v3.1", sub: "first version",
+    trigger: "<strong>Gateway:</strong> POL-HL-0142 v3.1 (effective 2026-01-01) is loaded.",
+    nodes: {
+      "policy-source-events": ["rendered", "9 passages received"],
+      "policy-structure": ["rendered", "9 passages keyed p1 to p9"],
+      "policy-map": ["rendered", "8 slots, 5 parameters; validated"],
+      "policy-cards": ["rendered", "5 cards written; validated"],
+      "review-queue": ["rendered", "5 new cards queued"],
+    },
+    queue: [["scope", "new"], ["variable-income-calc", "new"], ["dti-ratio", "new"], ["dti-max", "new"], ["dti-above-max", "new"]],
+    note: "Everything runs the first time, and every card needs a first review.",
+  },
+  {
+    tab: "2 · Re-send v3.1", sub: "nothing changed",
+    trigger: "<strong>Gateway:</strong> the same v3.1 is sent again.",
+    nodes: {
+      "policy-source-events": ["skipped", "same fingerprint as last time"],
+      "policy-structure": ["idle", "not woken"],
+      "policy-map": ["idle", "not woken"],
+      "policy-cards": ["idle", "not woken"],
+      "review-queue": ["idle", "not woken"],
+    },
+    queue: [],
+    note: "One skipped receipt and no model work. Duplicate deliveries are free.",
+  },
+  {
+    tab: "3 · Load v3.2", sub: "DTI limit 45% → 43%",
+    trigger: "<strong>Gateway:</strong> v3.2 (effective 2026-07-01) changes clauses 3.1 and 4.1 and adds clause 1.2.",
+    diff: "<p class=\"diff\"><b>3.1</b> The maximum back-end debt-to-income (DTI) ratio is <del>45%.</del> <ins>43%.</ins> Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter.</p><p class=\"diff\"><b>1.2</b> <ins>This policy does not apply to applications with a principal balance above the conforming loan limit.</ins></p>",
+    nodes: {
+      "policy-source-events": ["rendered", "10 passages received"],
+      "policy-structure": ["rendered", "2 changed (p5, p7), 1 added (p10), 7 kept"],
+      "policy-map": ["rendered", "DTI_MAX 0.45 → 0.43; new slot for 1.2"],
+      "policy-cards": ["rendered", "2 rewritten, 3 reused"],
+      "review-queue": ["rendered", "2 cards queued"],
+    },
+    queue: [["dti-max", "changed", "new quote and tests"], ["dti-above-max", "parameter-changed", "DTI_MAX: 0.45 → 0.43"]],
+    note: "The map and card updates are model work; the decision of what to redo is not. Three cards stay approved without being touched.",
+  },
+  {
+    tab: "Fault drill", sub: "bad card render",
+    trigger: "<strong>Same v3.2 change,</strong> but the model returns the <code>dti-max</code> card with a reworded quote: <mark>Maximum DTI is now 43 percent.</mark>",
+    nodes: {
+      "policy-source-events": ["rendered", "10 passages received"],
+      "policy-structure": ["rendered", "2 changed, 1 added"],
+      "policy-map": ["rendered", "validated"],
+      "policy-cards": ["failed", "validator: quote not found verbatim in p5"],
+      "review-queue": ["idle", "not woken"],
+    },
+    queue: [],
+    note: "The failed step writes a receipt with the reason and saves nothing. The last good cards stand, and reviewers never see an invalid card.",
+  },
+];
+const STATE_LABEL = { rendered: "ran", skipped: "skipped", idle: "not woken", pending: "waiting", failed: "rejected" };
+const esc = (s) => String(s).replace(/[&<>"]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" })[c]);
+const tabs = document.getElementById("tabs");
+const panel = document.getElementById("panel");
+
+function show(i) {
+  [...tabs.children].forEach((b, k) => { b.setAttribute("aria-selected", String(k === i)); b.tabIndex = k === i ? 0 : -1; });
+  const r = RUNS[i];
+  const chain = NODES.map((n) => {
+    const [s, what] = r.nodes[n];
+    return `<div class="node" data-s="${s}"><span class="name">${esc(n)}</span><span class="state">${STATE_LABEL[s]}</span><span class="what">${esc(what)}</span></div>`;
+  }).join("");
+  const queue = r.queue.length
+    ? `<ul class="queue">${r.queue.map(([slot, reason, detail]) => `<li><span class="pill ${reason}">${reason.replace("-", " ")}</span><code>${esc(slot)}</code>${detail ? `<span style="color:var(--ink-3);font-size:13.5px">${esc(detail)}</span>` : ""}</li>`).join("")}</ul>`
+    : `<p><span class="pill none">empty</span> <span style="color:var(--ink-2);font-size:14.5px">Nothing new for reviewers.</span></p>`;
+  panel.innerHTML = `<p class="trigger">${r.trigger}</p>${r.diff ?? ""}<div class="chain">${chain}</div>
+    <div class="outcome"><div class="box2"><h3>What reached reviewers</h3>${queue}</div><div class="box2"><h3>Why</h3><p style="color:var(--ink-2);font-size:15px">${esc(r.note)}</p></div></div>`;
+  panel.setAttribute("aria-labelledby", `tab-${i}`);
+}
+
+RUNS.forEach((r, i) => {
+  const b = document.createElement("button");
+  b.type = "button"; b.role = "tab"; b.id = `tab-${i}`;
+  b.setAttribute("aria-controls", "panel");
+  b.innerHTML = `${esc(r.tab)}<small>${esc(r.sub)}</small>`;
+  b.addEventListener("click", () => show(i));
+  b.addEventListener("keydown", (e) => {
+    if (e.key === "ArrowRight" || e.key === "ArrowLeft") {
+      e.preventDefault();
+      const n = (i + (e.key === "ArrowRight" ? 1 : RUNS.length - 1)) % RUNS.length;
+      show(n); tabs.children[n].focus();
+    }
+  });
+  tabs.appendChild(b);
+});
+show(2);
+
+document.querySelectorAll("[data-copy]").forEach((btn) => {
+  btn.addEventListener("click", async () => {
+    const text = document.getElementById(btn.dataset.copy).textContent;
+    try { await navigator.clipboard.writeText(text); btn.textContent = "Copied"; }
+    catch { const r = document.createRange(); r.selectNodeContents(document.getElementById(btn.dataset.copy)); const s = getSelection(); s.removeAllRanges(); s.addRange(r); btn.textContent = "Selected"; }
+    setTimeout(() => { btn.textContent = "Copy"; }, 1600);
+  });
+});
+</script>
