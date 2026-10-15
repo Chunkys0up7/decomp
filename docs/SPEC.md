@@ -154,7 +154,12 @@ Example (from `golden/sample-hl0142/cards.json`):
 | C5 / C5b | Parameters declared and used; hard-coded policy numbers flagged |
 | C6 | Inputs come from the map vocabulary |
 | C7 / C8 | Relations and issues resolve |
-| C9 | Machine-evaluable cards have logic and passing tests |
+| C9 | Machine-evaluable cards have logic and passing tests (run in the runtime sandbox) |
+| C10 | Expressions use only the allow-list and read only declared inputs and parameters |
+| C11 | `binds` targets are registered, single-bound and acyclic; `result_severity` values are valid |
+| C12 | Test inputs match the vocabulary types and enums |
+
+C10–C12 belong to the card runtime (`docs/specs/card-runtime.md` R2). The checks themselves live in `pipeline/checks.mjs`; `validate.mjs` is the CLI.
 
 Mutation-checked: a reworded quote, a wrong parameter value, a dropped passage, a hard-coded threshold and an unregistered input are each caught. A wrong parameter is caught twice, by M3 against the source and by C9 through the tests of every card that uses it.
 
@@ -208,8 +213,9 @@ Policy, publish time, counts, published cards with hashes, rejected cards, and u
 | Components | `src/components/` | Shell, cards (glyphs, badges), load, decompose, review, publish |
 | Styling | `src/styles/palette.css` | The only file with raw colours; re-themes Salt tokens |
 | Method | `golden/`, `pipeline/` | Reference data and validator |
+| Runtime | `runtime/` | Bundles, version selection, loan evaluation, receipts, CLI (`docs/specs/card-runtime.md`) |
 
-The UI never imports the pipeline at run time. A real decomposition service plugs in by implementing `DecompositionAdapter` and returning a `DecompositionResult`.
+The UI never imports the pipeline or the runtime at run time. A real decomposition service plugs in by implementing `DecompositionAdapter` and returning a `DecompositionResult`.
 
 ## 8. Review workflow
 
@@ -237,7 +243,7 @@ Rules enforced in the reducer and selectors:
 | Types | `tsc --noEmit`, strict; a compile-time list of every Salt export used |
 | Design tokens | `scripts/verify-tokens.mjs`: every `--salt-*` token exists in the imported theme, every `--pc-*` token is defined, no raw colours or Salt-internal selectors in product CSS |
 | Lint | ESLint with typescript-eslint, react-hooks and jsx-a11y; user-facing text must come from the copy catalog |
-| Unit and component | Vitest: 52 tests (domain, IDs, hashing, reducer rules, selectors, persistence, mocks, components) |
+| Unit and component | Vitest: 52 UI tests (domain, IDs, hashing, reducer rules, selectors, persistence, mocks, components) and 41 runtime tests (C10–C12, bundles, evaluation, version selection, receipts) |
 | End to end | Playwright: 78 tests across dev and production builds — Salt loading, shell, every screen state, full happy path with a schema-validated export, keyboard-only path, reload restore |
 | Accessibility | axe on every screen and state (zero serious or critical), keyboard navigation, focus management, reflow at 390px, reduced motion |
 | Visual | Guardrails (tinted canvas, rounded padded elevated panels, one primary action, no horizontal scroll) and screenshot baselines at 1440 and 390 |
@@ -262,6 +268,7 @@ Rules enforced in the reducer and selectors:
 | Mock adapters | Built; deterministic, used by all tests |
 | Real decomposition service | Not built |
 | Pass 3 consolidation | Not started |
+| Card runtime and loan agent (Phase 8) | Built: `runtime/`, `.claude/skills/loan-check/`; spec `docs/specs/card-runtime.md` |
 
 ## 12. Roadmap
 
@@ -274,6 +281,10 @@ Rules enforced in the reducer and selectors:
 7. **Multi-document packages** (Q5): resolve external references across documents.
 8. **Publish target** (Q4): a real artifact store keyed on card ID and URI.
 9. **Pass 3 consolidation**: deduplication, cross-section relations and conflict detection at document scale.
+10. **Pipeline re-check (Phase 9)**: when a new bundle supersedes one, re-check in-flight loans through the runtime's memo, re-running only what moved.
+11. **Overlays (Phase 10)**: a lender's own card set layered on a source policy, re-validated when the source changes.
+
+Done: **card runtime and loan agent (Phase 8)**, `docs/specs/card-runtime.md`.
 
 ## 13. Open questions
 
@@ -285,6 +296,7 @@ Rules enforced in the reducer and selectors:
 | Q5 | Packages spanning several source documents |
 | Q6 | Reviewer identity and audit trail |
 | Q7 | Whether rejecting requires a reason |
+| Q12 | Whether the published artifact (`policy-card/1.0`) should carry executable fields, or the runtime bundle stays the agent's format |
 
 ## 14. References
 

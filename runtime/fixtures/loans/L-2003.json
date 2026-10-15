@@ -1,0 +1,25 @@
+{
+  "schema": "loan-file/1.0",
+  "loan_id": "L-2003",
+  "$comment": "Fictional sample loan for POL-HL-0142.",
+  "as_of": {
+    "note_date": "2026-03-20"
+  },
+  "facts": {
+    "loan": {
+      "type": "conventional",
+      "lien": "first",
+      "channel": "retail"
+    },
+    "property": {
+      "occupancy": "primary"
+    },
+    "borrower": {
+      "monthly_obligations": 2100,
+      "has_variable_income": false
+    },
+    "file": {
+      "factors_approved_by_senior_uw": false
+    }
+  }
+}

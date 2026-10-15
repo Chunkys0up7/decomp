@@ -36,7 +36,10 @@
     "borrower.qualifying_income": { "type": "money/month" },
     "variable_income.earnings": { "type": "money", "meaning": "Overtime, bonus and commission earned over the lookback." },
     "loan.dti_ratio": { "type": "ratio" },
-    "file.factors_approved_by_senior_uw": { "type": "boolean" }
+    "file.factors_approved_by_senior_uw": { "type": "boolean" },
+    "loan.in_scope": { "type": "boolean", "meaning": "Bound by the scope card." },
+    "borrower.has_variable_income": { "type": "boolean" },
+    "variable_income.qualifying_monthly": { "type": "money/month", "meaning": "Bound by the variable income calculation." }
   },
 
   "externalRefs": {

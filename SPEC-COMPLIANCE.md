@@ -4,8 +4,9 @@
 - `policy-cards-build-spec.md` v1.0 (behaviour, data, IDs, gating, adapters, Salt loading, tests) — "main spec"
 - `policy-cards-visual-agent.md` (visual override; wins on colour, shape, spacing, density) — "visual spec", IDs prefixed `VIS-n`
 - Decomposition method: `docs/approach.md` (this repo; not part of the original spec — see X1–X3)
+- Card runtime and loan agent: `docs/specs/card-runtime.md` (this repo, Phase 8) — IDs `R1`–`R8`
 
-**Last updated**: 2026-10-12
+**Last updated**: 2026-10-15
 
 Status: ⬜ Not started · 🟡 In progress · ✅ Done · 🟦 Verified · ❌ Blocked · ➖ Deferred
 
@@ -21,6 +22,7 @@ Status: ⬜ Not started · 🟡 In progress · ✅ Done · 🟦 Verified · ❌ 
 | 5 | Load screen | TEST-23, TEST-17 | 🟦 `e2e/load.spec.ts` (6), TEST-17 unit |
 | 6 | Publish screen | TEST-24, full TEST-31 | 🟦 `e2e/flow.spec.ts` TEST-31 incl. schema-validated export; TEST-24 failure-path UI in Phase 7 |
 | 7 | Hardening | TEST-35–42 | 🟦 exit criteria met (`npm run verify`: 52 unit, 78 e2e); TEST-38 superseded (D-T3) |
+| 8 | Card runtime and loan agent (`docs/specs/card-runtime.md`) | R1–R8; `runtime/runtime.test.mjs`; fixtures rebuild identically | ✅ built; see Phase 8 table |
 
 ## Requirements — Phase 0 (in scope now)
 
@@ -94,12 +96,26 @@ Status: ⬜ Not started · 🟡 In progress · ✅ Done · 🟦 Verified · ❌ 
 | Accessibility | A11Y-01 … A11Y-14 | 2–7 | 🟦 axe (TEST-40) zero serious/critical on every listed state; keyboard-only flow (TEST-37); reflow at 390 (A11Y-10); reduced motion honoured in scrolling (A11Y-11); jsx-a11y lint |
 | Tests | TEST-20 … TEST-25, TEST-31 … TEST-42, VIS-10 | 2–7 | 🟦 TEST-20–25 unit/component (TEST-24 `PublishScreen.test.tsx`, TEST-25 lint rule, mutation-checked); TEST-31–37, 40–42 e2e; TEST-41 baselines in `e2e/hardening.spec.ts-snapshots/` (stable over 5 repeats) |
 
+## Requirements — Phase 8 (card runtime)
+
+| ID | Requirement | Status | Evidence |
+|---|---|---|---|
+| R1 | Runtime bundle `policy-card-runtime/1.0`, built only from a validated set; card fingerprints include resolved params; tamper check | ✅ | `runtime/bundle.mjs`; tests "bundles" (determinism, committed fixtures match, param change moves fingerprint, invalid set refused, tamper detected) |
+| R2 | Card fields `applies_when`, `over`, `item_when`, `binds`, `result_severity`; checks C10–C12 | ✅ | `pipeline/checks.mjs`, `runtime/expr.mjs`; golden sample extended; tests "validator C10-C12" (mutations) |
+| R3 | Deterministic evaluation: order, five step statuses, no defaults, assumptions, discrepancies, outcome ranking, sandbox | ✅ | `runtime/evaluate.mjs`; tests "evaluation", "sandbox" |
+| R4 | Version selection by as-of date, early adoption, fail closed | ✅ | `runtime/select.mjs`; tests "version selection" |
+| R5 | `loan-file/1.0` in, `loan-decision/1.0` out; passage IDs only | ✅ | `runtime/fixtures/loans/`; decision shape in tests |
+| R6 | Receipts with memo: rendered, skipped on unchanged inputs, re-rendered on a new bundle | ✅ | `runtime/receipts.mjs`; tests "receipts" |
+| R7 | JS API, CLI (`npm run runtime`, `npm run loan:check`), agent skill | ✅ | `runtime/index.mjs`, `runtime/cli.mjs`, `.claude/skills/loan-check/SKILL.md` |
+| R8 | Out of scope recorded (Phase 9 re-check, overlays, multi-document, MCP, UI) | ✅ | `docs/specs/card-runtime.md` R8; `docs/SPEC.md` roadmap 10–11 |
+
 ## Out-of-spec changes
 
 | ID | Change | Justification | Decided by | Note |
 |---|---|---|---|---|
 | X1 | Repo also hosts the decomposition method (`pipeline/`, `golden/`) next to the UI | User's core problem is decomposition at scale (2026-10-12); spec treats it as a black box (spec 1.4, 8) | user 2026-10-12 | Pipeline is Node scripts; UI never imports them at run time |
 | X2 | ~~Source-specific decomposition adapter~~ (dropped) | The pilot source was only an example; the app stays source-agnostic. The mock stays the default until a real decomposition adapter exists | user 2026-10-12 | Not built; pilot source data removed from the repo |
+| X4 | Card runtime and loan agent (Phase 8) | Lender use case: apply reviewed cards to loan files with version selection and lineage | user 2026-10-15 | Spec written first (`docs/specs/card-runtime.md`); UI untouched |
 | X3 | Planned: policy map review step (slots, parameters, coverage) | `docs/approach.md` — highest-value review gate | proposed, needs spec amendment | Not started; raise after Phase 3 |
 
 ## Open questions
@@ -107,6 +123,7 @@ Status: ⬜ Not started · 🟡 In progress · ✅ Done · 🟦 Verified · ❌ 
 | ID | Question | Spec ref | Resolution |
 |---|---|---|---|
 | Q1–Q8 | Main spec open questions (stable IDs, inline edit, Amplitude, publish target, multi-doc, audit trail, reject reason, concurrency) | section 16.2 | Q1 and Q2 have proposals in `docs/approach.md` (slot-based IDs, edit log); record answers in `docs/deviations.md` |
+| Q12 | Should `policy-card/1.0` carry executable fields, or does the runtime bundle stay the agent's format? | card-runtime R1 | Open; bundle used for now |
 | Q9 | Card model mismatch: spec cards have `seq`/`shortId` and free-text fields; pipeline cards have `slot`, `params`, `inputs`, `expr`, `tests` | section 6.1 vs `golden/` | Proposed: adapter (X2) maps slot → shortId by document order and carries pipeline extras in an optional `card.agent` block; no spec type removed |
 
 ## Decisions log

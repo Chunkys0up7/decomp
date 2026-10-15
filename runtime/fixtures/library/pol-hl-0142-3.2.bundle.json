@@ -1,0 +1,407 @@
+{
+  "schema": "policy-card-runtime/1.0",
+  "policy": {
+    "id": "POL-HL-0142",
+    "version": "3.2",
+    "effectiveFrom": "2026-07-01",
+    "supersedes": "3.1"
+  },
+  "parameters": {
+    "PAYSTUB_LOOKBACK_DAYS": {
+      "value": 30,
+      "unit": "days"
+    },
+    "VOE_MAX_AGE_BUSINESS_DAYS": {
+      "value": 10,
+      "unit": "business days"
+    },
+    "VARIABLE_INCOME_MONTHS": {
+      "value": 24,
+      "unit": "months"
+    },
+    "DTI_MAX": {
+      "value": 0.43,
+      "unit": "ratio"
+    },
+    "DTI_MAX_WITH_FACTORS": {
+      "value": 0.5,
+      "unit": "ratio"
+    }
+  },
+  "inputs": {
+    "loan.type": {
+      "type": "enum",
+      "values": [
+        "conventional",
+        "government",
+        "jumbo"
+      ]
+    },
+    "loan.lien": {
+      "type": "enum",
+      "values": [
+        "first",
+        "second"
+      ]
+    },
+    "loan.channel": {
+      "type": "enum",
+      "values": [
+        "retail",
+        "broker",
+        "correspondent"
+      ]
+    },
+    "property.occupancy": {
+      "type": "enum",
+      "values": [
+        "primary",
+        "second_home",
+        "investment"
+      ]
+    },
+    "borrower.monthly_obligations": {
+      "type": "money/month"
+    },
+    "borrower.qualifying_income": {
+      "type": "money/month"
+    },
+    "variable_income.earnings": {
+      "type": "money",
+      "meaning": "Overtime, bonus and commission earned over the lookback."
+    },
+    "loan.dti_ratio": {
+      "type": "ratio"
+    },
+    "file.factors_approved_by_senior_uw": {
+      "type": "boolean"
+    },
+    "loan.in_scope": {
+      "type": "boolean",
+      "meaning": "Bound by the scope card."
+    },
+    "borrower.has_variable_income": {
+      "type": "boolean"
+    },
+    "variable_income.qualifying_monthly": {
+      "type": "money/month",
+      "meaning": "Bound by the variable income calculation."
+    }
+  },
+  "issues": {
+    "ISS-01": {
+      "severity": "error",
+      "blocking": true,
+      "title": "Reserves must be \"adequate\" with no threshold",
+      "passages": [
+        "p9"
+      ]
+    },
+    "ISS-02": {
+      "severity": "warning",
+      "blocking": false,
+      "title": "Short history allowed, but the calculation needs 24 months",
+      "passages": [
+        "p3",
+        "p4"
+      ]
+    },
+    "ISS-03": {
+      "severity": "warning",
+      "blocking": false,
+      "title": "Exception guidelines not supplied",
+      "passages": [
+        "p8"
+      ]
+    },
+    "ISS-04": {
+      "severity": "warning",
+      "blocking": false,
+      "title": "\"Compensating factors\" is not defined",
+      "passages": [
+        "p5",
+        "p7"
+      ]
+    }
+  },
+  "cards": [
+    {
+      "slot": "scope",
+      "type": "fact",
+      "title": "Policy scope",
+      "expr": "i.loan.type === 'conventional' && i.loan.lien === 'first' && i.property.occupancy === 'primary' && i.loan.channel === 'retail'",
+      "binds": "loan.in_scope",
+      "result_severity": {
+        "true": "info",
+        "false": "info"
+      },
+      "inputs": [
+        "loan.type",
+        "loan.lien",
+        "property.occupancy",
+        "loan.channel"
+      ],
+      "params": [],
+      "resolved_params": {},
+      "relations": [],
+      "issues": [],
+      "evidence": [
+        {
+          "passageId": "p1",
+          "quote": "applies to all conventional first-lien mortgage applications submitted through the retail channel for owner-occupied primary residences"
+        }
+      ],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "loan": {
+              "type": "conventional",
+              "lien": "first",
+              "channel": "retail"
+            },
+            "property": {
+              "occupancy": "primary"
+            }
+          },
+          "expect": true
+        },
+        {
+          "given": {
+            "loan": {
+              "type": "conventional",
+              "lien": "first",
+              "channel": "broker"
+            },
+            "property": {
+              "occupancy": "primary"
+            }
+          },
+          "expect": false
+        }
+      ],
+      "card_fingerprint": "sha256:e5c99672e8929cf8"
+    },
+    {
+      "slot": "variable-income-calc",
+      "type": "calculation",
+      "title": "Qualifying variable income",
+      "expr": "i.variable_income.earnings / P.VARIABLE_INCOME_MONTHS",
+      "applies_when": "i.loan.in_scope && i.borrower.has_variable_income",
+      "binds": "variable_income.qualifying_monthly",
+      "inputs": [
+        "variable_income.earnings"
+      ],
+      "params": [
+        "VARIABLE_INCOME_MONTHS"
+      ],
+      "resolved_params": {
+        "VARIABLE_INCOME_MONTHS": 24
+      },
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "variable-income-inclusion"
+        }
+      ],
+      "issues": [
+        "ISS-02"
+      ],
+      "evidence": [
+        {
+          "passageId": "p4",
+          "quote": "calculated as the sum of earnings over the preceding 24 months divided by 24"
+        }
+      ],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "variable_income": {
+              "earnings": 24000
+            }
+          },
+          "expect": 1000
+        },
+        {
+          "given": {
+            "variable_income": {
+              "earnings": 0
+            }
+          },
+          "expect": 0
+        }
+      ],
+      "card_fingerprint": "sha256:40ac1f3b6addc513"
+    },
+    {
+      "slot": "dti-ratio",
+      "type": "calculation",
+      "title": "Back-end DTI ratio",
+      "expr": "i.borrower.monthly_obligations / i.borrower.qualifying_income",
+      "applies_when": "i.loan.in_scope",
+      "binds": "loan.dti_ratio",
+      "inputs": [
+        "borrower.monthly_obligations",
+        "borrower.qualifying_income"
+      ],
+      "params": [],
+      "resolved_params": {},
+      "relations": [],
+      "issues": [],
+      "evidence": [
+        {
+          "passageId": "p6",
+          "quote": "DTI equals total monthly obligations divided by gross monthly qualifying income, expressed as a percentage."
+        }
+      ],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "borrower": {
+              "monthly_obligations": 2700,
+              "qualifying_income": 6000
+            }
+          },
+          "expect": 0.45
+        },
+        {
+          "given": {
+            "borrower": {
+              "monthly_obligations": 1500,
+              "qualifying_income": 6000
+            }
+          },
+          "expect": 0.25
+        }
+      ],
+      "card_fingerprint": "sha256:b7eebd6f51c9fddb"
+    },
+    {
+      "slot": "dti-max",
+      "type": "rule",
+      "title": "Maximum back-end DTI",
+      "expr": "i.loan.dti_ratio <= P.DTI_MAX ? 'within_limit' : (i.loan.dti_ratio <= P.DTI_MAX_WITH_FACTORS && i.file.factors_approved_by_senior_uw ? 'permitted_with_factors' : 'exceeds_limit')",
+      "applies_when": "i.loan.in_scope",
+      "result_severity": {
+        "within_limit": "pass",
+        "permitted_with_factors": "condition",
+        "exceeds_limit": "fail"
+      },
+      "inputs": [
+        "loan.dti_ratio",
+        "file.factors_approved_by_senior_uw"
+      ],
+      "params": [
+        "DTI_MAX",
+        "DTI_MAX_WITH_FACTORS"
+      ],
+      "resolved_params": {
+        "DTI_MAX": 0.43,
+        "DTI_MAX_WITH_FACTORS": 0.5
+      },
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "dti-ratio"
+        }
+      ],
+      "issues": [
+        "ISS-04"
+      ],
+      "evidence": [
+        {
+          "passageId": "p5",
+          "quote": "The maximum back-end debt-to-income (DTI) ratio is 43%."
+        },
+        {
+          "passageId": "p5",
+          "quote": "Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter."
+        }
+      ],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.43
+            },
+            "file": {
+              "factors_approved_by_senior_uw": false
+            }
+          },
+          "expect": "within_limit"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.45
+            },
+            "file": {
+              "factors_approved_by_senior_uw": false
+            }
+          },
+          "expect": "exceeds_limit"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.48
+            },
+            "file": {
+              "factors_approved_by_senior_uw": true
+            }
+          },
+          "expect": "permitted_with_factors"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.52
+            },
+            "file": {
+              "factors_approved_by_senior_uw": true
+            }
+          },
+          "expect": "exceeds_limit"
+        }
+      ],
+      "card_fingerprint": "sha256:6d02a1da0d57c999"
+    },
+    {
+      "slot": "dti-above-max",
+      "type": "procedure",
+      "title": "Handling DTI above 43%",
+      "applies_when": "i.loan.in_scope && i.loan.dti_ratio > P.DTI_MAX",
+      "inputs": [
+        "loan.dti_ratio"
+      ],
+      "params": [
+        "DTI_MAX"
+      ],
+      "resolved_params": {
+        "DTI_MAX": 0.43
+      },
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "dti-max"
+        }
+      ],
+      "issues": [
+        "ISS-04"
+      ],
+      "evidence": [
+        {
+          "passageId": "p7",
+          "quote": "the underwriter must document at least two compensating factors, route the file to the Senior Underwriter queue, and record the decision in the loan file within one business day"
+        }
+      ],
+      "machineEvaluable": true,
+      "tests": [],
+      "card_fingerprint": "sha256:3553f32ced2c78ac"
+    }
+  ],
+  "bundle_hash": "sha256:afdd42f170cb13cfb3ddd2a2d324a463bc9b7cec0ef70b14ba1099c869719fbe"
+}

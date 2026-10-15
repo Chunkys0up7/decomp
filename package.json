@@ -13,7 +13,10 @@
     "e2e": "playwright test",
     "e2e:salt": "playwright test e2e/salt-check.spec.ts",
     "verify": "npm run typecheck && npm run lint && npm run verify:tokens && npm run test && npm run e2e",
-    "validate:cards": "node pipeline/validate.mjs"
+    "validate:cards": "node pipeline/validate.mjs",
+    "runtime": "node runtime/cli.mjs",
+    "loan:check": "node runtime/cli.mjs check",
+    "runtime:fixtures": "node runtime/cli.mjs bundle golden/sample-hl0142 --out runtime/fixtures/library/pol-hl-0142-3.1.bundle.json && node runtime/cli.mjs bundle runtime/fixtures/sources/sample-hl0142-v3.2 --out runtime/fixtures/library/pol-hl-0142-3.2.bundle.json"
   },
   "dependencies": {
     "@fontsource/open-sans": "^5.3.0",

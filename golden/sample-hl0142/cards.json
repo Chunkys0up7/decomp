@@ -13,6 +13,8 @@
         { "key": "applies_to", "label": "Applies to", "value": "loan.type = conventional; loan.lien = first; property.occupancy = primary; loan.channel = retail", "mono": true }
       ],
       "expr": "i.loan.type === 'conventional' && i.loan.lien === 'first' && i.property.occupancy === 'primary' && i.loan.channel === 'retail'",
+      "binds": "loan.in_scope",
+      "result_severity": { "true": "info", "false": "info" },
       "evidence": [
         { "passageId": "p1", "quote": "applies to all conventional first-lien mortgage applications submitted through the retail channel for owner-occupied primary residences" }
       ],
@@ -37,6 +39,8 @@
         { "key": "output", "label": "Output", "value": "monthly variable income (money/month)", "mono": true }
       ],
       "expr": "i.variable_income.earnings / P.VARIABLE_INCOME_MONTHS",
+      "applies_when": "i.loan.in_scope && i.borrower.has_variable_income",
+      "binds": "variable_income.qualifying_monthly",
       "evidence": [
         { "passageId": "p4", "quote": "calculated as the sum of earnings over the preceding 24 months divided by 24" }
       ],
@@ -61,6 +65,8 @@
         { "key": "output", "label": "Output", "value": "loan.dti_ratio (ratio, shown as a percentage)", "mono": true }
       ],
       "expr": "i.borrower.monthly_obligations / i.borrower.qualifying_income",
+      "applies_when": "i.loan.in_scope",
+      "binds": "loan.dti_ratio",
       "evidence": [
         { "passageId": "p6", "quote": "DTI equals total monthly obligations divided by gross monthly qualifying income, expressed as a percentage." }
       ],
@@ -85,6 +91,8 @@
         { "key": "inputs", "label": "Inputs", "value": "loan.dti_ratio; file.factors_approved_by_senior_uw", "mono": true }
       ],
       "expr": "i.loan.dti_ratio <= P.DTI_MAX ? 'within_limit' : (i.loan.dti_ratio <= P.DTI_MAX_WITH_FACTORS && i.file.factors_approved_by_senior_uw ? 'permitted_with_factors' : 'exceeds_limit')",
+      "applies_when": "i.loan.in_scope",
+      "result_severity": { "within_limit": "pass", "permitted_with_factors": "condition", "exceeds_limit": "fail" },
       "evidence": [
         { "passageId": "p5", "quote": "The maximum back-end debt-to-income (DTI) ratio is 45%." },
         { "passageId": "p5", "quote": "Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter." }
@@ -118,6 +126,7 @@
       "inputs": ["loan.dti_ratio"],
       "params": ["DTI_MAX"],
       "relations": [{ "kind": "depends_on", "slot": "dti-max" }],
+      "applies_when": "i.loan.in_scope && i.loan.dti_ratio > P.DTI_MAX",
       "issues": ["ISS-04"],
       "machineEvaluable": true,
       "tests": []
