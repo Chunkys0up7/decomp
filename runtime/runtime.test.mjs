@@ -9,7 +9,7 @@ import { buildBundle, buildBundleFromDir, checkLoan, decide, evaluate, explain, 
 
 const read = (f) => JSON.parse(readFileSync(f, "utf8"));
 const GOLDEN = "golden/sample-hl0142";
-const V32 = "runtime/fixtures/sources/sample-hl0142-v3.2";
+const V32 = "runtime/fixtures/policies/sample-hl0142-v3.2";
 const LIB = "runtime/fixtures/library";
 const source = (dir) => ({ passages: read(`${dir}/passages.json`), map: read(`${dir}/map.json`), cards: read(`${dir}/cards.json`).cards });
 const loan = (id) => read(`runtime/fixtures/loans/${id}.json`);

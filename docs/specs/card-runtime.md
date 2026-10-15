@@ -126,5 +126,5 @@ Phase 9 pipeline re-check when a bundle is superseded; Phase 10 lender overlays;
 ## Verification
 
 - `npm run validate:cards -- sample-hl0142` passes with the R2 fields; `runtime/runtime.test.mjs` covers C10–C12 mutations, bundle determinism and tamper detection, every step status, collections, version selection, early adoption, receipts and memo skips, and `explain`.
-- Fixtures are fictional: `runtime/fixtures/sources/` (POL-HL-0142 v3.2), `runtime/fixtures/library/` (built bundles for 3.1 and 3.2; a test asserts they match a fresh build) and `runtime/fixtures/loans/`.
+- Fixtures are fictional: `runtime/fixtures/policies/` (POL-HL-0142 v3.2), `runtime/fixtures/library/` (built bundles for 3.1 and 3.2; a test asserts they match a fresh build) and `runtime/fixtures/loans/`.
 - Real-source acceptance runs locally against git-ignored data, per the source-material rule in `docs/SPEC.md` 10.
