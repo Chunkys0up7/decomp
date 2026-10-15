@@ -1,0 +1,164 @@
+{
+  "$comment": "policy-cards render for v3.2: dti-max rewritten (quote and tests); dti-above-max re-checked and unchanged.",
+  "cards": [
+    {
+      "slot": "dti-max",
+      "type": "rule",
+      "title": "Maximum back-end DTI",
+      "fields": [
+        {
+          "key": "when",
+          "label": "When",
+          "value": "loan.dti_ratio > {{DTI_MAX}}."
+        },
+        {
+          "key": "then",
+          "label": "Then",
+          "value": "Permitted only if loan.dti_ratio <= {{DTI_MAX_WITH_FACTORS}} AND compensating factors are approved by a Senior Underwriter (file.factors_approved_by_senior_uw); otherwise the DTI limit is exceeded."
+        },
+        {
+          "key": "else",
+          "label": "Else",
+          "value": "Within the limit."
+        },
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "loan.dti_ratio; file.factors_approved_by_senior_uw",
+          "mono": true
+        }
+      ],
+      "expr": "i.loan.dti_ratio <= P.DTI_MAX ? 'within_limit' : (i.loan.dti_ratio <= P.DTI_MAX_WITH_FACTORS && i.file.factors_approved_by_senior_uw ? 'permitted_with_factors' : 'exceeds_limit')",
+      "evidence": [
+        {
+          "passageId": "p5",
+          "quote": "The maximum back-end debt-to-income (DTI) ratio is 43%."
+        },
+        {
+          "passageId": "p5",
+          "quote": "Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter."
+        }
+      ],
+      "inputs": [
+        "loan.dti_ratio",
+        "file.factors_approved_by_senior_uw"
+      ],
+      "params": [
+        "DTI_MAX",
+        "DTI_MAX_WITH_FACTORS"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "dti-ratio"
+        }
+      ],
+      "issues": [
+        "ISS-04"
+      ],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.43
+            },
+            "file": {
+              "factors_approved_by_senior_uw": false
+            }
+          },
+          "expect": "within_limit"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.45
+            },
+            "file": {
+              "factors_approved_by_senior_uw": false
+            }
+          },
+          "expect": "exceeds_limit"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.48
+            },
+            "file": {
+              "factors_approved_by_senior_uw": true
+            }
+          },
+          "expect": "permitted_with_factors"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.52
+            },
+            "file": {
+              "factors_approved_by_senior_uw": true
+            }
+          },
+          "expect": "exceeds_limit"
+        }
+      ]
+    },
+    {
+      "slot": "dti-above-max",
+      "type": "procedure",
+      "title": "Handling DTI above {{DTI_MAX}}",
+      "fields": [
+        {
+          "key": "trigger",
+          "label": "Trigger",
+          "value": "dti-max returns permitted_with_factors or exceeds_limit (loan.dti_ratio > {{DTI_MAX}}).",
+          "mono": true
+        },
+        {
+          "key": "step_1",
+          "label": "Step 1",
+          "value": "Actor: underwriter. Document at least two compensating factors in the loan file."
+        },
+        {
+          "key": "step_2",
+          "label": "Step 2",
+          "value": "Actor: underwriter. Route the file to the Senior Underwriter queue."
+        },
+        {
+          "key": "step_3",
+          "label": "Step 3",
+          "value": "Actor: underwriter. Record the decision in the loan file within one business day."
+        },
+        {
+          "key": "done_when",
+          "label": "Done when",
+          "value": "Factors are documented, the file is routed, and the decision is recorded within one business day."
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p7",
+          "quote": "the underwriter must document at least two compensating factors, route the file to the Senior Underwriter queue, and record the decision in the loan file within one business day"
+        }
+      ],
+      "inputs": [
+        "loan.dti_ratio"
+      ],
+      "params": [
+        "DTI_MAX"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "dti-max"
+        }
+      ],
+      "issues": [
+        "ISS-04"
+      ],
+      "machineEvaluable": true,
+      "tests": []
+    }
+  ]
+}

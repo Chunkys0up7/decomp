@@ -28,7 +28,10 @@ act on, and a card is rewritten only when something it depends on changed.
 #### cards
 
 Material: per card, its slot, type, title, fields, expr, evidence, inputs,
-params, relations, issues, machine-evaluable flag and tests.
+params, relations, issues, machine-evaluable flag and tests, plus
+`resolved_params`: the value of every parameter it uses. Card text says
+`{{DTI_MAX}}`, so without the resolved values a threshold change would leave the
+card's fingerprint unchanged and no reviewer would be told.
 Postcondition: the whole set passes `validate-card-set` (C1 to C9); a set that
 fails commits nothing and the last good cards stand.
 

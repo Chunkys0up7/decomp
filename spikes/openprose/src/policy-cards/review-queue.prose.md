@@ -13,20 +13,21 @@ version, and nothing they already approved that did not change.
 
 ### Requires
 
-- `cards`: the current card set
+- `cards`: the current card set, including the resolved value of every
+  parameter each card uses
 
 ### Maintains
 
 - `queue`: cards needing review, each with a reason (`new`, `changed`,
-  `removed`, `upstream-changed`) and what moved
+  `parameter-changed`, `removed`, `upstream-changed`) and what moved
 - immaterial: queue ordering, display text
 
 #### queue
 
 Material: the set of (card slot, reason, moved fields).
 Postcondition: every card whose material content moved is in the queue;
-cards whose content did not move are not, unless a card they depend on moved
-(`upstream-changed`).
+cards whose content did not move are not, unless a parameter they use changed
+value (`parameter-changed`) or a card they depend on moved (`upstream-changed`).
 
 ### Continuity
 

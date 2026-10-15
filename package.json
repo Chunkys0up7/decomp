@@ -13,7 +13,8 @@
     "e2e": "playwright test",
     "e2e:salt": "playwright test e2e/salt-check.spec.ts",
     "verify": "npm run typecheck && npm run lint && npm run verify:tokens && npm run test && npm run e2e",
-    "validate:cards": "node pipeline/validate.mjs"
+    "validate:cards": "node pipeline/validate.mjs",
+    "spike:openprose": "node spikes/openprose/demo/run-demo.mjs"
   },
   "dependencies": {
     "@fontsource/open-sans": "^5.3.0",

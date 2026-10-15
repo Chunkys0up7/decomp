@@ -1,0 +1,366 @@
+{
+  "$comment": "Pass 2 reference cards for the fictional sample policy (subset). Each card fills one map slot, uses only map inputs and parameters, quotes its evidence verbatim, and carries tests that prove an agent can act on it. Validate with: npm run validate:cards -- sample-hl0142",
+  "schema": "policy-cards/0.1",
+  "policy": "POL-HL-0142",
+  "version": "3.1",
+  "cards": [
+    {
+      "slot": "scope",
+      "type": "fact",
+      "title": "Policy scope",
+      "fields": [
+        {
+          "key": "statement",
+          "label": "Statement",
+          "value": "This policy applies to conventional first-lien mortgage applications for owner-occupied primary residences submitted through the retail channel."
+        },
+        {
+          "key": "applies_to",
+          "label": "Applies to",
+          "value": "loan.type = conventional; loan.lien = first; property.occupancy = primary; loan.channel = retail",
+          "mono": true
+        }
+      ],
+      "expr": "i.loan.type === 'conventional' && i.loan.lien === 'first' && i.property.occupancy === 'primary' && i.loan.channel === 'retail'",
+      "evidence": [
+        {
+          "passageId": "p1",
+          "quote": "applies to all conventional first-lien mortgage applications submitted through the retail channel for owner-occupied primary residences"
+        }
+      ],
+      "inputs": [
+        "loan.type",
+        "loan.lien",
+        "property.occupancy",
+        "loan.channel"
+      ],
+      "params": [],
+      "relations": [],
+      "issues": [],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "loan": {
+              "type": "conventional",
+              "lien": "first",
+              "channel": "retail"
+            },
+            "property": {
+              "occupancy": "primary"
+            }
+          },
+          "expect": true
+        },
+        {
+          "given": {
+            "loan": {
+              "type": "conventional",
+              "lien": "first",
+              "channel": "broker"
+            },
+            "property": {
+              "occupancy": "primary"
+            }
+          },
+          "expect": false
+        }
+      ]
+    },
+    {
+      "slot": "variable-income-calc",
+      "type": "calculation",
+      "title": "Qualifying variable income",
+      "fields": [
+        {
+          "key": "applies_when",
+          "label": "Applies when",
+          "value": "Variable income may be included (variable-income-inclusion)."
+        },
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "variable_income.earnings: overtime, bonus and commission over the preceding {{VARIABLE_INCOME_MONTHS}} months (money)",
+          "mono": true
+        },
+        {
+          "key": "formula",
+          "label": "Formula",
+          "value": "monthly_variable_income = earnings / {{VARIABLE_INCOME_MONTHS}}",
+          "mono": true
+        },
+        {
+          "key": "output",
+          "label": "Output",
+          "value": "monthly variable income (money/month)",
+          "mono": true
+        }
+      ],
+      "expr": "i.variable_income.earnings / P.VARIABLE_INCOME_MONTHS",
+      "evidence": [
+        {
+          "passageId": "p4",
+          "quote": "calculated as the sum of earnings over the preceding 24 months divided by 24"
+        }
+      ],
+      "inputs": [
+        "variable_income.earnings"
+      ],
+      "params": [
+        "VARIABLE_INCOME_MONTHS"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "variable-income-inclusion"
+        }
+      ],
+      "issues": [
+        "ISS-02"
+      ],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "variable_income": {
+              "earnings": 24000
+            }
+          },
+          "expect": 1000
+        },
+        {
+          "given": {
+            "variable_income": {
+              "earnings": 0
+            }
+          },
+          "expect": 0
+        }
+      ]
+    },
+    {
+      "slot": "dti-ratio",
+      "type": "calculation",
+      "title": "Back-end DTI ratio",
+      "fields": [
+        {
+          "key": "applies_when",
+          "label": "Applies when",
+          "value": "Qualifying any borrower under this policy."
+        },
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "borrower.monthly_obligations (money/month); borrower.qualifying_income (money/month)",
+          "mono": true
+        },
+        {
+          "key": "formula",
+          "label": "Formula",
+          "value": "dti_ratio = monthly_obligations / qualifying_income",
+          "mono": true
+        },
+        {
+          "key": "output",
+          "label": "Output",
+          "value": "loan.dti_ratio (ratio, shown as a percentage)",
+          "mono": true
+        }
+      ],
+      "expr": "i.borrower.monthly_obligations / i.borrower.qualifying_income",
+      "evidence": [
+        {
+          "passageId": "p6",
+          "quote": "DTI equals total monthly obligations divided by gross monthly qualifying income, expressed as a percentage."
+        }
+      ],
+      "inputs": [
+        "borrower.monthly_obligations",
+        "borrower.qualifying_income"
+      ],
+      "params": [],
+      "relations": [],
+      "issues": [],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "borrower": {
+              "monthly_obligations": 2700,
+              "qualifying_income": 6000
+            }
+          },
+          "expect": 0.45
+        },
+        {
+          "given": {
+            "borrower": {
+              "monthly_obligations": 1500,
+              "qualifying_income": 6000
+            }
+          },
+          "expect": 0.25
+        }
+      ]
+    },
+    {
+      "slot": "dti-max",
+      "type": "rule",
+      "title": "Maximum back-end DTI",
+      "fields": [
+        {
+          "key": "when",
+          "label": "When",
+          "value": "loan.dti_ratio > {{DTI_MAX}}."
+        },
+        {
+          "key": "then",
+          "label": "Then",
+          "value": "Permitted only if loan.dti_ratio <= {{DTI_MAX_WITH_FACTORS}} AND compensating factors are approved by a Senior Underwriter (file.factors_approved_by_senior_uw); otherwise the DTI limit is exceeded."
+        },
+        {
+          "key": "else",
+          "label": "Else",
+          "value": "Within the limit."
+        },
+        {
+          "key": "inputs",
+          "label": "Inputs",
+          "value": "loan.dti_ratio; file.factors_approved_by_senior_uw",
+          "mono": true
+        }
+      ],
+      "expr": "i.loan.dti_ratio <= P.DTI_MAX ? 'within_limit' : (i.loan.dti_ratio <= P.DTI_MAX_WITH_FACTORS && i.file.factors_approved_by_senior_uw ? 'permitted_with_factors' : 'exceeds_limit')",
+      "evidence": [
+        {
+          "passageId": "p5",
+          "quote": "The maximum back-end debt-to-income (DTI) ratio is 45%."
+        },
+        {
+          "passageId": "p5",
+          "quote": "Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter."
+        }
+      ],
+      "inputs": [
+        "loan.dti_ratio",
+        "file.factors_approved_by_senior_uw"
+      ],
+      "params": [
+        "DTI_MAX",
+        "DTI_MAX_WITH_FACTORS"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "dti-ratio"
+        }
+      ],
+      "issues": [
+        "ISS-04"
+      ],
+      "machineEvaluable": true,
+      "tests": [
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.45
+            },
+            "file": {
+              "factors_approved_by_senior_uw": false
+            }
+          },
+          "expect": "within_limit"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.48
+            },
+            "file": {
+              "factors_approved_by_senior_uw": true
+            }
+          },
+          "expect": "permitted_with_factors"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.48
+            },
+            "file": {
+              "factors_approved_by_senior_uw": false
+            }
+          },
+          "expect": "exceeds_limit"
+        },
+        {
+          "given": {
+            "loan": {
+              "dti_ratio": 0.52
+            },
+            "file": {
+              "factors_approved_by_senior_uw": true
+            }
+          },
+          "expect": "exceeds_limit"
+        }
+      ]
+    },
+    {
+      "slot": "dti-above-max",
+      "type": "procedure",
+      "title": "Handling DTI above {{DTI_MAX}}",
+      "fields": [
+        {
+          "key": "trigger",
+          "label": "Trigger",
+          "value": "dti-max returns permitted_with_factors or exceeds_limit (loan.dti_ratio > {{DTI_MAX}}).",
+          "mono": true
+        },
+        {
+          "key": "step_1",
+          "label": "Step 1",
+          "value": "Actor: underwriter. Document at least two compensating factors in the loan file."
+        },
+        {
+          "key": "step_2",
+          "label": "Step 2",
+          "value": "Actor: underwriter. Route the file to the Senior Underwriter queue."
+        },
+        {
+          "key": "step_3",
+          "label": "Step 3",
+          "value": "Actor: underwriter. Record the decision in the loan file within one business day."
+        },
+        {
+          "key": "done_when",
+          "label": "Done when",
+          "value": "Factors are documented, the file is routed, and the decision is recorded within one business day."
+        }
+      ],
+      "evidence": [
+        {
+          "passageId": "p7",
+          "quote": "the underwriter must document at least two compensating factors, route the file to the Senior Underwriter queue, and record the decision in the loan file within one business day"
+        }
+      ],
+      "inputs": [
+        "loan.dti_ratio"
+      ],
+      "params": [
+        "DTI_MAX"
+      ],
+      "relations": [
+        {
+          "kind": "depends_on",
+          "slot": "dti-max"
+        }
+      ],
+      "issues": [
+        "ISS-04"
+      ],
+      "machineEvaluable": true,
+      "tests": []
+    }
+  ]
+}

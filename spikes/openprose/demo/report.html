@@ -1,0 +1,129 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<title>OpenProse Spike Report</title>
+<style>
+:root{--canvas:#F3F5F8;--surface:#fff;--tint:#EEF4FF;--sunken:#F7F9FC;--border:#DDE3EC;--ink:#14213D;--ink2:#44546F;--ink3:#5B6B84;--accent:#1F5FD1;--ok:#1B6B3A;--okt:#E4F5EA;--err:#B42318;--errt:#FDECEA;--warn:#8A5A00;--warnt:#FFF4D6}
+*{box-sizing:border-box}body{margin:0;background:var(--canvas);color:var(--ink);font:15px/1.55 "Open Sans",system-ui,sans-serif}
+main{max-width:1200px;margin:0 auto;padding:32px 24px 64px;display:flex;flex-direction:column;gap:24px}
+h1{font-size:32px;margin:0}h2{font-size:21px;margin:0 0 12px}h3{font-size:16px;margin:16px 0 8px}
+.panel{background:var(--surface);border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 3px rgba(20,33,61,.06);padding:24px;overflow-x:auto}
+.muted{color:var(--ink2)}.small{font-size:12.5px;color:var(--ink2)}code,.mono{font-family:"PT Mono",Consolas,monospace;font-size:13px}
+table{border-collapse:collapse;width:100%}th,td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid var(--border)}th{font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3)}
+td.rendered{background:var(--okt)}td.skipped{background:var(--sunken)}td.failed{background:var(--errt)}td.none{color:var(--ink3)}td strong{text-transform:uppercase;font-size:12px;letter-spacing:.04em}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:16px}
+.stat{font-size:34px;font-weight:700;line-height:1.1}
+del{background:var(--errt);color:var(--err);text-decoration:line-through}ins{background:var(--okt);color:var(--ok);text-decoration:none;font-weight:600}
+pre{background:var(--sunken);border:1px solid var(--border);border-radius:12px;padding:14px;overflow:auto;font:12.5px/1.5 "PT Mono",Consolas,monospace;white-space:pre-wrap}
+mark{background:#FFE9A8;color:var(--ink);padding:1px 3px;border-radius:4px}.fields th{width:28%;text-transform:none;letter-spacing:0;font-size:13px;color:var(--ink2)}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:600}.tag.changed{background:var(--warnt);color:var(--warn)}.tag.upstream-changed{background:var(--tint);color:var(--accent)}.tag.new{background:var(--okt);color:var(--ok)}.tag.parameter-changed{background:#F6E8FA;color:#8A2BA0}.tag.removed{background:var(--errt);color:var(--err)}
+ul.clean{margin:8px 0 0;padding-left:20px}
+</style></head><body><main>
+<header><p class="small">decomp · spike/openprose · generated from receipts in <code>local/demo-root</code></p>
+<h1>Policy cards as an OpenProse program</h1>
+<p class="muted">POL-HL-0142 v3.1 decomposed, then re-run against POL-HL-0142 v3.2 (model renders). The VM re-rendered only what moved.</p></header>
+
+<section class="grid">
+ <div class="panel"><div class="stat">7 / 10</div><div class="muted">passages kept their key across versions, although 8 were renumbered</div></div>
+ <div class="panel"><div class="stat">2 rewritten · 3 reused</div><div class="muted">cards after the version change</div></div>
+ <div class="panel"><div class="stat">2</div><div class="muted">cards sent back to reviewers (changed, parameter-changed)</div></div>
+</section>
+
+<section class="panel"><h2>Program</h2>
+ <p class="muted">Compiled from Contract Markdown in <code>spikes/openprose/src/policy-cards/</code>. Edges are <code>Requires</code> ↔ <code>Maintains</code> facets, wired from the contracts alone.</p>
+ <table><tr><th>Node</th><th>Kind</th><th>Requires</th><th>Maintains</th></tr><tr><td class="mono">policy-source-events</td><td>gateway</td><td class="mono">-</td><td class="mono">source-document</td></tr><tr><td class="mono">policy-structure</td><td>responsibility</td><td class="mono">source-document</td><td class="mono">passages</td></tr><tr><td class="mono">policy-map</td><td>responsibility</td><td class="mono">passages</td><td class="mono">slots, parameters, inputs, coverage, issues</td></tr><tr><td class="mono">policy-cards</td><td>responsibility</td><td class="mono">passages, slots, parameters, inputs, issues</td><td class="mono">cards</td></tr><tr><td class="mono">review-queue</td><td>responsibility</td><td class="mono">cards</td><td class="mono">queue</td></tr></table>
+</section>
+
+<section class="panel"><h2>Runs</h2>
+ <table class="runs"><tr><th>Run</th><th>policy-source-events</th><th>policy-structure</th><th>policy-map</th><th>policy-cards</th><th>review-queue</th></tr>
+ <tr><td><span class="mono">20261015-151026-4c43c8</span><div class="small">POL-HL-0142 v3.1</div></td><td class="rendered"><strong>rendered</strong><div class="small">version 3.1, effective 2026-01-01, 9 passages · 0 new, 0 reused</div></td><td class="rendered"><strong>rendered</strong><div class="small">keys: 0 changed (-), 9 added (p1, p2, p3 … p9), 0 removed (-) · 9 new, 0 reused</div></td><td class="rendered"><strong>rendered</strong><div class="small">POL-HL-0142 v3.1 — 9 passages, 9 in coverage denominator | Map:   8 slots, 5 parameters, 9 inputs, 1 external refs, 4 issues | Cards: 0 authored (0/8 slots), 0  · 1 new, 0 reused</div></td><td class="rendered"><strong>rendered</strong><div class="small">5 rewritten (scope, variable-income-calc, dti-ratio, dti-max, dti-above-max), 0 reused · 5 new, 0 reused</div></td><td class="rendered"><strong>rendered</strong><div class="small">scope:new, variable-income-calc:new, dti-ratio:new, dti-max:new, dti-above-max:new · 0 new, 0 reused</div></td></tr><tr><td><span class="mono">20261015-151026-b13400</span><div class="small">POL-HL-0142 v3.1 re-sent</div></td><td class="skipped"><strong>skipped</strong><div class="small"></div></td><td class="none">not woken</td><td class="none">not woken</td><td class="none">not woken</td><td class="none">not woken</td></tr><tr><td><span class="mono">20261015-151026-a38b32</span><div class="small">POL-HL-0142 v3.2</div></td><td class="rendered"><strong>rendered</strong><div class="small">version 3.2, effective 2026-07-01, 10 passages · 0 new, 0 reused</div></td><td class="rendered"><strong>rendered</strong><div class="small">keys: 2 changed (p5, p7), 1 added (p10), 0 removed (-) · 3 new, 7 reused</div></td><td class="none">waiting for a model render</td><td class="none">not woken</td><td class="none">not woken</td></tr><tr><td><span class="mono">20261015-151026-ee2ca1</span><div class="small">POL-HL-0142 v3.2 (model renders)</div></td><td class="skipped"><strong>skipped</strong><div class="small"></div></td><td class="none">not woken</td><td class="rendered"><strong>rendered</strong><div class="small">POL-HL-0142 v3.2 (model renders) — 10 passages, 10 in coverage denominator | Map:   9 slots, 5 parameters, 11 inputs, 1 external refs, 4 issues | Cards: 0 autho · 1 new, 0 reused</div></td><td class="rendered"><strong>rendered</strong><div class="small">2 rewritten (dti-max, dti-above-max), 3 reused · 2 new, 3 reused</div></td><td class="rendered"><strong>rendered</strong><div class="small">dti-max:changed, dti-above-max:parameter-changed · 0 new, 0 reused</div></td></tr></table>
+ <p class="small">"not woken" means no receipt: nothing the node subscribes to moved. Run 3 stopped after <code>policy-structure</code> because <code>policy-map</code> needed a model render; the next run resumed from the dirty mark.</p>
+</section>
+
+<section class="panel"><h2>What changed in the source</h2>
+ <ul class="clean">
+  <li><strong>Changed:</strong> <code>p5</code> (3.1), <code>p7</code> (4.1)</li>
+  <li><strong>Removed:</strong> -</li>
+  <li><strong>Added:</strong> <code>p10</code>: "This policy does not apply to applications with a principal balance above the conforming loan limit."</li>
+ </ul>
+ <h3>p5 · 3.1</h3><p>The maximum back-end debt-to-income (DTI) ratio is <del>45%.</del><ins>43%.</ins> Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter.</p><h3>p7 · 4.1</h3><p>When DTI exceeds <del>45%,</del><ins>43%,</ins> the underwriter must document at least two compensating factors, route the file to the Senior Underwriter queue, and record the decision in the loan file within one business day.</p>
+</section>
+
+<section class="panel"><h2>Map render (model)</h2>
+ <ul class="clean">
+  <li>Slots: added <code>scope-exclusion</code>; removed -</li>
+  <li>Parameters: <code>DTI_MAX: 0.45 → 0.43</code></li>
+  <li>Inputs added: <code>loan.principal_balance</code>, <code>loan.conforming_limit</code></li>
+  <li>Issues added: -</li>
+  <li>Issues retired: -</li>
+  <li>Coverage: added -; removed -</li>
+ </ul>
+</section>
+
+<section class="panel"><h2>Card rewritten: <code>dti-max</code></h2>
+ <div class="grid"><div><h3>Before</h3><table class="fields"><tr><th>When</th><td class="">loan.dti_ratio &gt; {{DTI_MAX}}.</td></tr><tr><th>Then</th><td class="">Permitted only if loan.dti_ratio &lt;= {{DTI_MAX_WITH_FACTORS}} AND compensating factors are approved by a Senior Underwriter (file.factors_approved_by_senior_uw); otherwise the DTI limit is exceeded.</td></tr><tr><th>Else</th><td class="">Within the limit.</td></tr><tr><th>Inputs</th><td class="mono">loan.dti_ratio; file.factors_approved_by_senior_uw</td></tr>
+  <tr><th>Evidence</th><td><mark>The maximum back-end debt-to-income (DTI) ratio is 45%.</mark><br><mark>Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter.</mark></td></tr>
+  <tr><th>Resolved params</th><td class="mono">DTI_MAX = 0.45, DTI_MAX_WITH_FACTORS = 0.5</td></tr>
+  <tr><th>Tests</th><td class="mono">{"loan":{"dti_ratio":0.45},"file":{"factors_approved_by_senior_uw":false}} → "within_limit"<br>{"loan":{"dti_ratio":0.48},"file":{"factors_approved_by_senior_uw":true}} → "permitted_with_factors"<br>{"loan":{"dti_ratio":0.48},"file":{"factors_approved_by_senior_uw":false}} → "exceeds_limit"<br>{"loan":{"dti_ratio":0.52},"file":{"factors_approved_by_senior_uw":true}} → "exceeds_limit"</td></tr></table><pre>i.loan.dti_ratio &lt;= P.DTI_MAX ? 'within_limit' : (i.loan.dti_ratio &lt;= P.DTI_MAX_WITH_FACTORS &amp;&amp; i.file.factors_approved_by_senior_uw ? 'permitted_with_factors' : 'exceeds_limit')</pre></div><div><h3>After</h3><table class="fields"><tr><th>When</th><td class="">loan.dti_ratio &gt; {{DTI_MAX}}.</td></tr><tr><th>Then</th><td class="">Permitted only if loan.dti_ratio &lt;= {{DTI_MAX_WITH_FACTORS}} AND compensating factors are approved by a Senior Underwriter (file.factors_approved_by_senior_uw); otherwise the DTI limit is exceeded.</td></tr><tr><th>Else</th><td class="">Within the limit.</td></tr><tr><th>Inputs</th><td class="mono">loan.dti_ratio; file.factors_approved_by_senior_uw</td></tr>
+  <tr><th>Evidence</th><td><mark>The maximum back-end debt-to-income (DTI) ratio is 43%.</mark><br><mark>Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter.</mark></td></tr>
+  <tr><th>Resolved params</th><td class="mono">DTI_MAX = 0.43, DTI_MAX_WITH_FACTORS = 0.5</td></tr>
+  <tr><th>Tests</th><td class="mono">{"loan":{"dti_ratio":0.43},"file":{"factors_approved_by_senior_uw":false}} → "within_limit"<br>{"loan":{"dti_ratio":0.45},"file":{"factors_approved_by_senior_uw":false}} → "exceeds_limit"<br>{"loan":{"dti_ratio":0.48},"file":{"factors_approved_by_senior_uw":true}} → "permitted_with_factors"<br>{"loan":{"dti_ratio":0.52},"file":{"factors_approved_by_senior_uw":true}} → "exceeds_limit"</td></tr></table><pre>i.loan.dti_ratio &lt;= P.DTI_MAX ? 'within_limit' : (i.loan.dti_ratio &lt;= P.DTI_MAX_WITH_FACTORS &amp;&amp; i.file.factors_approved_by_senior_uw ? 'permitted_with_factors' : 'exceeds_limit')</pre><p class="small">Tests: 4 (0 added) · issues: ISS-04</p></div></div></section>
+
+<section class="panel"><h2>Review queue</h2>
+ <table><tr><th>Card</th><th>Reason</th><th>Detail</th></tr><tr><td class="mono">dti-max</td><td><span class="tag changed">changed</span></td><td class="mono"></td></tr><tr><td class="mono">dti-above-max</td><td><span class="tag parameter-changed">parameter-changed</span></td><td class="mono">DTI_MAX: 0.45 → 0.43</td></tr></table>
+ <p class="small">The other 3 cards did not move and stay approved.</p>
+</section>
+
+
+  <section class="panel"><h2>Fault drill: a bad model render is not committed</h2>
+    <p class="muted">Same version change, but the model's card for <code>dti-max</code> paraphrases its evidence instead of quoting it.</p>
+    <table class="runs"><tr><th>Node</th><th>Receipt</th></tr><tr><td class="mono">policy-source-events</td><td class="rendered"><strong>rendered</strong><div class="small">version 3.2, effective 2026-07-01, 10 passages · 0 new, 0 reused</div></td></tr><tr><td class="mono">policy-structure</td><td class="rendered"><strong>rendered</strong><div class="small">keys: 2 changed (p5, p7), 1 added (p10), 0 removed (-) · 3 new, 7 reused</div></td></tr><tr><td class="mono">policy-map</td><td class="rendered"><strong>rendered</strong><div class="small">drill v3.2 with a bad card — 10 passages, 10 in coverage denominator | Map:   9 slots, 5 parameters, 11 inputs, 1 external refs, 4 issues | Cards: 0 authored (0 · 1 new, 0 reused</div></td></tr><tr><td class="mono">policy-cards</td><td class="failed"><strong>failed</strong><div class="small">postcondition failed; last good truth stands</div></td></tr><tr><td class="mono">review-queue</td><td class="none">not woken</td></tr></table>
+    <pre>Cards: 5 authored (5/9 slots), 10 test cases
+  ERROR C2 [dti-max] quote not found verbatim in p5: "Maximum DTI is now 43 percent...."
+FAIL: 1 error(s), 0 warning(s)</pre>
+    <ul class="clean"><li><code>policy-cards</code> wrote <strong>failed</strong>; its fingerprints were carried forward, so the last good cards stand.</li>
+    <li><code>review-queue</code> was never woken (its ledger still has 1 receipt): reviewers never see an invalid card.</li></ul>
+  </section>
+
+<section class="panel"><h2>A receipt</h2><p class="muted">The commit object for the card render above, as written to <code>state/world-model/policy-cards/receipts.jsonl</code>.</p><pre>{
+  "node": "policy-cards",
+  "contract_fingerprint": "sha256:e748d95b7929f496",
+  "wake": {
+    "source": "input",
+    "refs": [
+      "policy-map.slots",
+      "policy-map.parameters",
+      "policy-map.inputs"
+    ]
+  },
+  "input_fingerprints": {
+    "policy-structure.passages": "sha256:9f124a7807e62277",
+    "policy-map.slots": "sha256:dc0aceff39dd2a96",
+    "policy-map.parameters": "sha256:c15f0d15f1378154",
+    "policy-map.inputs": "sha256:712855a272222636",
+    "policy-map.issues": "sha256:d1ea104efd182455"
+  },
+  "fingerprints": {
+    "@atomic": "sha256:fe06d19c420ae0a2",
+    "cards": "sha256:66345d4b679fb545"
+  },
+  "semantic_diff": "2 rewritten (dti-max, dti-above-max), 3 reused",
+  "status": "rendered",
+  "cost": {
+    "provider": "agent-session",
+    "model": "claude-opus-5-5",
+    "tokens": {
+      "fresh": null,
+      "reused": null
+    },
+    "units": {
+      "fresh": 2,
+      "reused": 3
+    },
+    "surprise_cause": "input"
+  },
+  "prev": "sha256:4c058d16ae4fc6fa",
+  "sig": {
+    "signer": null
+  },
+  "id": "sha256:b4bde37d3bca5d03"
+}</pre></section>
+</main></body></html>

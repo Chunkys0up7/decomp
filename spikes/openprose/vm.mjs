@@ -194,14 +194,24 @@ const renders = {
     const check = validate(run, passages, map, out);
     if (!check.ok) return { failed: check.report };
     run.afterCommit = () => write(join(nodeDir("policy-cards"), "memo.json"), nextMemo);
-    return { facets: { cards: out }, diff: `${rewritten.length} rewritten (${rewritten.join(", ") || "-"}), ${reused.length} reused`, work: { fresh: rewritten.length, reused: reused.length }, validation: check.report };
+    // Resolved parameter values are material: a threshold change must move the card's fingerprint.
+    const resolved = out.map(({ resolved_params: _r, ...c }) => ({ ...c, resolved_params: Object.fromEntries((c.params ?? []).map((p) => [p, parameters[p]?.value ?? null])) }));
+    return { facets: { cards: resolved }, diff: `${rewritten.length} rewritten (${rewritten.join(", ") || "-"}), ${reused.length} reused`, work: { fresh: rewritten.length, reused: reused.length }, validation: check.report };
   },
   "review-queue"() {
     const cards = published("policy-cards", "cards");
     const prior = published("review-queue", "baseline") ?? {};
-    const now = Object.fromEntries(cards.map((c) => [c.slot, token(c)]));
+    const body = ({ resolved_params: _r, ...c }) => c;
+    const now = Object.fromEntries(cards.map((c) => [c.slot, { body: token(body(c)), params: c.resolved_params ?? {} }]));
     const queue = [];
-    for (const [slot, t] of Object.entries(now)) if (!prior[slot]) queue.push({ slot, reason: "new" }); else if (prior[slot] !== t) queue.push({ slot, reason: "changed" });
+    for (const [slot, n] of Object.entries(now)) {
+      const p = prior[slot];
+      if (!p) { queue.push({ slot, reason: "new" }); continue; }
+      if (p.body !== n.body) { queue.push({ slot, reason: "changed" }); continue; }
+      // Same card text, different value behind a {{PARAM}}: the rule's meaning still changed.
+      const moved = Object.keys(n.params).filter((k) => p.params[k] !== n.params[k]);
+      if (moved.length) queue.push({ slot, reason: "parameter-changed", detail: moved.map((k) => `${k}: ${p.params[k]} → ${n.params[k]}`).join(", ") });
+    }
     for (const slot of Object.keys(prior)) if (!now[slot]) queue.push({ slot, reason: "removed" });
     const moved = new Set(queue.filter((q) => q.reason !== "new").map((q) => q.slot));
     for (const c of cards) if (!queue.some((q) => q.slot === c.slot) && (c.relations ?? []).some((r) => moved.has(r.slot))) queue.push({ slot: c.slot, reason: "upstream-changed" });

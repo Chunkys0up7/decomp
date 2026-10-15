@@ -1,0 +1,130 @@
+{
+  "section": {
+    "number": "POL-HL-0142",
+    "title": "Underwriting policy (fictional sample)",
+    "version": "3.2",
+    "effectiveDate": "2026-07-01"
+  },
+  "passages": [
+    {
+      "id": "p1",
+      "order": 1,
+      "ref": "1.1",
+      "headingPath": [
+        "1 Scope"
+      ],
+      "parent": null,
+      "text": "This policy applies to all conventional first-lien mortgage applications submitted through the retail channel for owner-occupied primary residences.",
+      "kind": "normative",
+      "modality": "obligation"
+    },
+    {
+      "id": "p2",
+      "order": 2,
+      "ref": "1.2",
+      "headingPath": [
+        "1 Scope"
+      ],
+      "parent": null,
+      "text": "This policy does not apply to applications with a principal balance above the conforming loan limit.",
+      "kind": "normative",
+      "modality": "prohibition"
+    },
+    {
+      "id": "p3",
+      "order": 3,
+      "ref": "2.1",
+      "headingPath": [
+        "2 Qualifying income"
+      ],
+      "parent": null,
+      "text": "Qualifying income for salaried borrowers is the gross monthly base pay, verified by pay stubs covering the most recent 30 days and a written verification of employment dated within 10 business days of closing.",
+      "kind": "normative",
+      "modality": "obligation"
+    },
+    {
+      "id": "p4",
+      "order": 4,
+      "ref": "2.2",
+      "headingPath": [
+        "2 Qualifying income"
+      ],
+      "parent": null,
+      "text": "Overtime, bonus and commission income may be included only when a two-year history is documented and the income is likely to continue. Where the documented history is under two years, written approval from a Credit Officer is required.",
+      "kind": "normative",
+      "modality": "permission"
+    },
+    {
+      "id": "p5",
+      "order": 5,
+      "ref": "2.3",
+      "headingPath": [
+        "2 Qualifying income"
+      ],
+      "parent": null,
+      "text": "Qualifying income from overtime, bonus and commission is calculated as the sum of earnings over the preceding 24 months divided by 24.",
+      "kind": "definitional",
+      "modality": null
+    },
+    {
+      "id": "p6",
+      "order": 6,
+      "ref": "3.1",
+      "headingPath": [
+        "3 Debt-to-income"
+      ],
+      "parent": null,
+      "text": "The maximum back-end debt-to-income (DTI) ratio is 43%. Ratios up to 50% are permitted with compensating factors approved by a Senior Underwriter.",
+      "kind": "normative",
+      "modality": "prohibition"
+    },
+    {
+      "id": "p7",
+      "order": 7,
+      "ref": "3.2",
+      "headingPath": [
+        "3 Debt-to-income"
+      ],
+      "parent": null,
+      "text": "DTI equals total monthly obligations divided by gross monthly qualifying income, expressed as a percentage.",
+      "kind": "definitional",
+      "modality": null
+    },
+    {
+      "id": "p8",
+      "order": 8,
+      "ref": "4.1",
+      "headingPath": [
+        "4 Handling and exceptions"
+      ],
+      "parent": null,
+      "text": "When DTI exceeds 43%, the underwriter must document at least two compensating factors, route the file to the Senior Underwriter queue, and record the decision in the loan file within one business day.",
+      "kind": "normative",
+      "modality": "obligation"
+    },
+    {
+      "id": "p9",
+      "order": 9,
+      "ref": "4.2",
+      "headingPath": [
+        "4 Handling and exceptions"
+      ],
+      "parent": null,
+      "text": "Exceptions to this policy are handled in accordance with the exception handling guidelines.",
+      "kind": "normative",
+      "modality": "obligation"
+    },
+    {
+      "id": "p10",
+      "order": 10,
+      "ref": "5.1",
+      "headingPath": [
+        "5 Reserves"
+      ],
+      "parent": null,
+      "text": "Reserves must be adequate for the loan type.",
+      "kind": "normative",
+      "modality": "obligation"
+    }
+  ]
+}
