@@ -243,7 +243,7 @@ Rules enforced in the reducer and selectors:
 | Types | `tsc --noEmit`, strict; a compile-time list of every Salt export used |
 | Design tokens | `scripts/verify-tokens.mjs`: every `--salt-*` token exists in the imported theme, every `--pc-*` token is defined, no raw colours or Salt-internal selectors in product CSS |
 | Lint | ESLint with typescript-eslint, react-hooks and jsx-a11y; user-facing text must come from the copy catalog |
-| Unit and component | Vitest: 52 UI tests (domain, IDs, hashing, reducer rules, selectors, persistence, mocks, components) and 41 runtime tests (C10–C12, bundles, evaluation, version selection, receipts) |
+| Unit and component | Vitest: 52 UI tests (domain, IDs, hashing, reducer rules, selectors, persistence, mocks, components) and 52 runtime tests (C10–C12, bundles, evaluation, version selection, receipts, pipeline re-check) |
 | End to end | Playwright: 78 tests across dev and production builds — Salt loading, shell, every screen state, full happy path with a schema-validated export, keyboard-only path, reload restore |
 | Accessibility | axe on every screen and state (zero serious or critical), keyboard navigation, focus management, reflow at 390px, reduced motion |
 | Visual | Guardrails (tinted canvas, rounded padded elevated panels, one primary action, no horizontal scroll) and screenshot baselines at 1440 and 390 |
@@ -269,6 +269,7 @@ Rules enforced in the reducer and selectors:
 | Real decomposition service | Not built |
 | Pass 3 consolidation | Not started |
 | Card runtime and loan agent (Phase 8) | Built: `runtime/`, `.claude/skills/loan-check/`; spec `docs/specs/card-runtime.md` |
+| Pipeline re-check (Phase 9) | Built: `runtime/pipeline.mjs`, `runtime/diff.mjs`; spec `docs/specs/pipeline-recheck.md` |
 
 ## 12. Roadmap
 
@@ -281,10 +282,9 @@ Rules enforced in the reducer and selectors:
 7. **Multi-document packages** (Q5): resolve external references across documents.
 8. **Publish target** (Q4): a real artifact store keyed on card ID and URI.
 9. **Pass 3 consolidation**: deduplication, cross-section relations and conflict detection at document scale.
-10. **Pipeline re-check (Phase 9)**: when a new bundle supersedes one, re-check in-flight loans through the runtime's memo, re-running only what moved.
-11. **Overlays (Phase 10)**: a lender's own card set layered on a source policy, re-validated when the source changes.
+10. **Overlays (Phase 10)**: a lender's own card set layered on a source policy, re-validated when the source changes.
 
-Done: **card runtime and loan agent (Phase 8)**, `docs/specs/card-runtime.md`.
+Done: **card runtime and loan agent (Phase 8)**, `docs/specs/card-runtime.md`; **pipeline re-check (Phase 9)**, `docs/specs/pipeline-recheck.md`.
 
 ## 13. Open questions
 

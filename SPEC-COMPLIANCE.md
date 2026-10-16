@@ -5,6 +5,7 @@
 - `policy-cards-visual-agent.md` (visual override; wins on colour, shape, spacing, density) — "visual spec", IDs prefixed `VIS-n`
 - Decomposition method: `docs/approach.md` (this repo; not part of the original spec — see X1–X3)
 - Card runtime and loan agent: `docs/specs/card-runtime.md` (this repo, Phase 8) — IDs `R1`–`R8`
+- Pipeline re-check: `docs/specs/pipeline-recheck.md` (this repo, Phase 9) — IDs `P1`–`P7`
 
 **Last updated**: 2026-10-15
 
@@ -23,6 +24,7 @@ Status: ⬜ Not started · 🟡 In progress · ✅ Done · 🟦 Verified · ❌ 
 | 6 | Publish screen | TEST-24, full TEST-31 | 🟦 `e2e/flow.spec.ts` TEST-31 incl. schema-validated export; TEST-24 failure-path UI in Phase 7 |
 | 7 | Hardening | TEST-35–42 | 🟦 exit criteria met (`npm run verify`: 52 unit, 78 e2e); TEST-38 superseded (D-T3) |
 | 8 | Card runtime and loan agent (`docs/specs/card-runtime.md`) | R1–R8; `runtime/runtime.test.mjs`; fixtures rebuild identically | ✅ built; see Phase 8 table |
+| 9 | Pipeline re-check (`docs/specs/pipeline-recheck.md`) | P1–P7; `runtime/pipeline.test.mjs` | ✅ built; see Phase 9 table |
 
 ## Requirements — Phase 0 (in scope now)
 
@@ -108,6 +110,18 @@ Status: ⬜ Not started · 🟡 In progress · ✅ Done · 🟦 Verified · ❌ 
 | R6 | Receipts with memo: rendered, skipped on unchanged inputs, re-rendered on a new bundle | ✅ | `runtime/receipts.mjs`; tests "receipts" |
 | R7 | JS API, CLI (`npm run runtime`, `npm run loan:check`), agent skill | ✅ | `runtime/index.mjs`, `runtime/cli.mjs`, `.claude/skills/loan-check/SKILL.md` |
 | R8 | Out of scope recorded (Phase 9 re-check, overlays, multi-document, MCP, UI) | ✅ | `docs/specs/card-runtime.md` R8; `docs/SPEC.md` roadmap 10–11 |
+
+## Requirements — Phase 9 (pipeline re-check)
+
+| ID | Requirement | Status | Evidence |
+|---|---|---|---|
+| P1 | Pipeline manifest `loan-pipeline/1.0` with loan status and lender version policy | ✅ | `runtime/pipeline.mjs` `loadPipeline`; `runtime/fixtures/pipeline.json` |
+| P2 | Re-check run: memo skips, re-renders, impact-only for closed/sold, chained run receipts | ✅ | `recheck`; tests "re-check runs"; memo keyed on the selection essentials (`selectionKey`) |
+| P3 | Step-level diff with classes and flags, new assumptions, newly outstanding | ✅ | `runtime/diff.mjs`; tests "decision diff" |
+| P4 | Review queue with prioritised reasons | ✅ | `queueReason`; tests for outcome_changed, would_change, newly_incomplete |
+| P5 | Report `pipeline-report/1.0`, deterministic hash, text summary, `--json`/`--out` | ✅ | `summarize`; determinism test; `npm run pipeline:recheck` |
+| P6 | Agent guidance for pipeline runs | ✅ | `.claude/skills/loan-check/SKILL.md` "Pipeline re-check" |
+| P7 | Out of scope recorded | ✅ | spec P7 |
 
 ## Out-of-spec changes
 

@@ -108,7 +108,7 @@ With a store (`--store <dir>`), each check appends a `loan-check` receipt to `<s
 
 `node, loan, policy, contract_fingerprint (bundle_hash), input_fingerprints {loan, selection}, fingerprints {decision}, semantic_diff {version, outcome} vs the previous receipt for this policy, version, outcome, status, at, prev, sig, id`.
 
-**Memo**: if the last receipt for this loan and policy has the same bundle, loan inputs and selection, the stored decision is returned and a `skipped` receipt appended — nothing is recomputed. A new bundle (a policy update or an adoption) or changed loan data re-renders. This is the hook Phase 9 uses to re-check a pipeline when a policy changes.
+**Memo**: if the last receipt for this loan and policy has the same bundle, loan inputs and selection (rule, as-of date, adoption and chosen version; not the list of versions considered), the stored decision is returned and a `skipped` receipt appended — nothing is recomputed. A new bundle (a policy update or an adoption) or changed loan data re-renders. This is the hook Phase 9 uses to re-check a pipeline when a policy changes.
 
 ## R7 Interfaces
 

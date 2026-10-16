@@ -41,6 +41,20 @@ npm run -s runtime -- bundle <dir-with-passages-map-cards> --out <library>/<name
 
 Sample data: `runtime/fixtures/library` and `runtime/fixtures/loans` (fictional policy POL-HL-0142).
 
+## Pipeline re-check
+
+After a library change (a new bundle, or the lender adopting a version), re-check the whole pipeline instead of single loans:
+
+```bash
+npm run -s pipeline:recheck -- --pipeline <loan-pipeline.json> --library <library> --store <dir>
+npm run -s pipeline:recheck -- --pipeline <loan-pipeline.json> --library <library> --store <dir> --adopt POLICY@VERSION   # what-if
+```
+
+- Lead with the review queue. For each queued loan, say why from its diff: which step moved, whether its card changed (rewrite or parameter) or only its inputs, the result before and after, new assumptions and newly outstanding items. Name the slots that stayed unchanged.
+- `skipped` means nothing relevant moved; do not re-run those loans to confirm. The runtime is deterministic.
+- `would_change` on a closed or sold loan is a flag for a person (for example a repurchase review), never an action you take.
+- Loans re-rendered with only `card_changed` steps were re-validated and nothing they decide moved; mention the count, not each loan.
+
 ## Reading the output
 
 - `Outcome`: `PASS`, `CONDITION` (meets with conditions or a procedure to carry out), `FAIL`, `INCOMPLETE` (data or a person's decision is needed), `NOT_APPLICABLE` (no pass or fail requirement in the policy applied; say which cards ran and why the others did not) or `NO_POLICY_IN_FORCE`.

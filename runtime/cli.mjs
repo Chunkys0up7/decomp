@@ -4,11 +4,13 @@
 //   node runtime/cli.mjs check <loan.json>... --library <dir> [--adopt POLICY@VERSION]... [--as-of note_date|application_date]
 //                              [--policy ID] [--store <dir>] [--json] [--quotes]
 //   node runtime/cli.mjs explain <decision.json> --library <dir> [--quotes]
+//   node runtime/cli.mjs recheck --pipeline <loan-pipeline.json> --library <dir> [--store <dir>]
+//                              [--adopt POLICY@VERSION]... [--as-of rule] [--json] [--out <report.json>]
 //
 // Exit codes: 0 ran (whatever the outcome), 1 usage or input error, 2 bundle failed validation.
 import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { dirname } from "node:path";
-import { BundleError, buildBundleFromDir, checkLoan, explain, loadLibrary, parseAdopt } from "./index.mjs";
+import { BundleError, buildBundleFromDir, checkLoan, explain, loadLibrary, loadPipeline, parseAdopt, recheck, summarize } from "./index.mjs";
 
 const args = process.argv.slice(2);
 const cmd = args[0];
@@ -22,7 +24,7 @@ for (let n = 1; n < args.length; n++) {
   else pos.push(a);
 }
 const read = (f) => JSON.parse(readFileSync(f, "utf8"));
-const usage = () => { console.error(readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(2, 7).map((l) => l.replace(/^\/\/ ?/, "")).join("\n")); process.exit(1); };
+const usage = () => { console.error(readFileSync(new URL(import.meta.url), "utf8").split("\n").slice(2, 9).map((l) => l.replace(/^\/\/ ?/, "")).join("\n")); process.exit(1); };
 
 try {
   if (cmd === "bundle") {
@@ -54,6 +56,11 @@ try {
     const bundle = loadLibrary(opts.library).find((b) => b.bundle_hash === decision.policy.bundle_hash) ?? null;
     if (decision.policy.bundle_hash && !bundle) throw new Error(`the bundle this decision used (${decision.policy.bundle_hash.slice(7, 19)}) is not in ${opts.library}`);
     console.log(explain(decision, bundle, { quotes: opts.quotes }).text);
+  } else if (cmd === "recheck") {
+    if (!opts.pipeline || !opts.library) usage();
+    const report = recheck(loadLibrary(opts.library), loadPipeline(opts.pipeline), { store: opts.store, adopt: opts.adopt, asOfRule: opts["as-of"] });
+    if (opts.out) { mkdirSync(dirname(opts.out), { recursive: true }); writeFileSync(opts.out, JSON.stringify(report, null, 2) + "\n"); }
+    console.log(opts.json ? JSON.stringify(report, null, 2) : summarize(report));
   } else usage();
 } catch (e) {
   console.error(e.message);

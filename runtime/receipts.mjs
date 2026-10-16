@@ -31,6 +31,12 @@ const loanDir = (store, loanId) => join(store, "loans", loanId.replace(/[^A-Za-z
 export const receiptsFile = (store, loanId) => join(loanDir(store, loanId), "receipts.jsonl");
 export const decisionFile = (store, loanId, hash) => join(loanDir(store, loanId), "decisions", `${hash.replace(":", "-")}.json`);
 
+/**
+ * What decides a selection: the rule, the as-of date, adoption and the chosen version. The list of
+ * versions considered is informational, so adding an unrelated bundle does not invalidate the memo.
+ */
+export const selectionKey = (sel) => token(sel ? { policy: sel.policy, rule: sel.rule, as_of: sel.as_of, adopted: sel.adopted, version: sel.version ?? null } : null);
+
 /** Input fingerprint for a loan check: the loan's facts and collections, nothing else. */
 export const loanInputs = (loan) => token({ facts: loan.facts ?? {}, collections: loan.collections ?? {} });
 
@@ -42,7 +48,7 @@ export function memo(store, loan, policyId, bundleHash, selection) {
   const inputs = loanInputs(loan);
   const last = [...readReceipts(receiptsFile(store, loan.loan_id))].reverse()
     .find((r) => r.policy === policyId && r.status !== "failed");
-  if (!last || last.contract_fingerprint !== bundleHash || last.input_fingerprints.loan !== inputs || last.input_fingerprints.selection !== token(selection)) return null;
+  if (!last || last.contract_fingerprint !== bundleHash || last.input_fingerprints.loan !== inputs || last.input_fingerprints.selection !== selectionKey(selection)) return null;
   const f = decisionFile(store, loan.loan_id, last.fingerprints.decision);
   return existsSync(f) ? JSON.parse(readFileSync(f, "utf8")) : null;
 }
@@ -57,7 +63,7 @@ export function record(store, loan, decision, { skipped = false, at = new Date()
     loan: loan.loan_id,
     policy: decision.policy.id,
     contract_fingerprint: decision.policy.bundle_hash,
-    input_fingerprints: { loan: loanInputs(loan), selection: token(decision.selection) },
+    input_fingerprints: { loan: loanInputs(loan), selection: selectionKey(decision.selection) },
     fingerprints: { decision: decision.decision_hash },
     semantic_diff: skipped || !prev ? null : {
       version: prev.version === decision.policy.version ? null : [prev.version, decision.policy.version],

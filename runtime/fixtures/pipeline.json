@@ -1,0 +1,30 @@
+{
+  "schema": "loan-pipeline/1.0",
+  "$comment": "Fictional sample pipeline for POL-HL-0142.",
+  "lender": {
+    "as_of_rule": "note_date",
+    "adopt": []
+  },
+  "loans": [
+    {
+      "file": "loans/L-2001.json",
+      "status": "in_process"
+    },
+    {
+      "file": "loans/L-2002.json",
+      "status": "in_process"
+    },
+    {
+      "file": "loans/L-2003.json",
+      "status": "in_process"
+    },
+    {
+      "file": "loans/L-2004.json",
+      "status": "in_process"
+    },
+    {
+      "file": "loans/L-2005.json",
+      "status": "sold"
+    }
+  ]
+}
